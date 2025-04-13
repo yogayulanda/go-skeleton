@@ -1,0 +1,9 @@
+syntax = "proto3";
+
+package proto.v2;
+option go_package = "/.;v2";
+
+// Import annotations for HTTP mapping
+import "google/api/annotations.proto";
+
+message Empty {};

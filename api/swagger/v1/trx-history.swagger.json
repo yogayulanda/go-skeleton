@@ -1,0 +1,207 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "v1/trx-history.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "Health"
+    },
+    {
+      "name": "TrxHistoryService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/v1/health": {
+      "get": {
+        "summary": "Check the health status of the service and its dependencies",
+        "operationId": "Health_Check",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1HealthCheckResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/v1/transactions": {
+      "get": {
+        "summary": "Get a list of transactions for a user",
+        "operationId": "TrxHistoryService_GetTransactions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1GetTransactionsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "userId",
+            "description": "User ID to fetch transactions for",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "TrxHistoryService"
+        ]
+      },
+      "post": {
+        "summary": "Store a new transaction",
+        "operationId": "TrxHistoryService_StoreTransaction",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1StoreTransactionResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/v1Transaction"
+            }
+          }
+        ],
+        "tags": [
+          "TrxHistoryService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "@type": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": {}
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1GetTransactionsResponse": {
+      "type": "object",
+      "properties": {
+        "transactions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/v1Transaction"
+          },
+          "title": "List of transactions"
+        }
+      },
+      "title": "Response message containing a list of transactions"
+    },
+    "v1HealthCheckResponse": {
+      "type": "object",
+      "properties": {
+        "healthStatus": {
+          "type": "string",
+          "title": "e.g., \"SERVING\", \"NOT_SERVING\""
+        },
+        "componentStatuses": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "e.g., { \"db\": \"OK\", \"kafka\": \"FAIL\", \"redis\": \"OK\" }"
+        }
+      },
+      "title": "Response message for health check"
+    },
+    "v1StoreTransactionResponse": {
+      "type": "object",
+      "properties": {
+        "statusMessage": {
+          "type": "string",
+          "title": "Status message of the transaction"
+        }
+      },
+      "title": "Response message for storing a transaction"
+    },
+    "v1Transaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "Transaction ID"
+        },
+        "userId": {
+          "type": "string",
+          "title": "User ID"
+        },
+        "amount": {
+          "type": "number",
+          "format": "double",
+          "title": "Transaction amount"
+        },
+        "description": {
+          "type": "string",
+          "title": "Description of the transaction"
+        },
+        "timestamp": {
+          "type": "string",
+          "title": "Timestamp of the transaction"
+        }
+      },
+      "title": "Transaction message representing a single transaction"
+    }
+  }
+}

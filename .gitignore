@@ -1,0 +1,59 @@
+
+# Binaries for programs and plugins
+*.exe
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Output of the `build` command
+/build/
+if-trx-history
+
+# Dependency directories
+/vendor/
+
+# Logs and debugging
+*.log
+*.trace
+*.prof
+*.out
+*.tmp
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*.bak
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Go specific
+*.mod
+*.sum
+/go.sum
+/go.work
+/go.work.sum
+
+# Protobuf generated files
+api/proto/gen/
+api/proto/swagger/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.development
+
+# Temporary files
+/tmp/
+*.tmp
+*.temp
+*.bak
+
+# Debugging tools
+__debug_bin
