@@ -2,35 +2,34 @@ package handler
 
 import (
 	"context"
-	"time"
 
 	v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/api/proto/gen/v1"
+	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/domain/history"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-// TrxHistoryHandler mengimplementasikan v1pb.TrxHistoryServiceServer
 type TrxHistoryHandler struct {
 	v1pb.UnimplementedTrxHistoryServiceServer
+	service history.TrxHistoryService
 }
 
-func NewTrxHistoryHandler() *TrxHistoryHandler {
-	return &TrxHistoryHandler{}
+func NewTrxHistoryHandler(service history.TrxHistoryService) *TrxHistoryHandler {
+	return &TrxHistoryHandler{service: service}
 }
 
 func (h *TrxHistoryHandler) GetTransactions(ctx context.Context, req *v1pb.GetTransactionsRequest) (*v1pb.GetTransactionsResponse, error) {
-	// Simulasi ambil data transaksi dari service/domain
-	txns := []*v1pb.Transaction{
-		{
-			Id:          "1",
-			UserId:      req.UserId,
-			Amount:      15000,
-			Description: "Topup",
-			Timestamp:   time.Now().Format(time.RFC3339),
-		},
+	txns, err := h.service.GetTransactions(ctx, req.UserId)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to fetch transactions: %v", err)
 	}
 	return &v1pb.GetTransactionsResponse{Transactions: txns}, nil
 }
 
 func (h *TrxHistoryHandler) StoreTransaction(ctx context.Context, tx *v1pb.Transaction) (*v1pb.StoreTransactionResponse, error) {
-	// Simulasi simpan transaksi
+	err := h.service.StoreTransaction(ctx, tx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to store transaction: %v", err)
+	}
 	return &v1pb.StoreTransactionResponse{StatusMessage: "Transaction stored successfully"}, nil
 }

@@ -2,34 +2,43 @@ package history
 
 import (
 	"context"
+	"time"
 
-	proto "gitlab.twprisma.com/fin/lmd/services/if-trx-history/api/proto/gen/v1"
+	v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/api/proto/gen/v1"
 )
 
-type Service struct{}
-
-func NewService() *Service {
-	return &Service{}
+// TrxHistoryService defines the domain interface
+type TrxHistoryService interface {
+	GetTransactions(ctx context.Context, userID string) ([]*v1pb.Transaction, error)
+	StoreTransaction(ctx context.Context, tx *v1pb.Transaction) error
 }
 
-func (s *Service) GetTransactions(ctx context.Context, req *proto.GetTransactionsRequest) (*proto.GetTransactionsResponse, error) {
-	// Implement logic to fetch transactions
-	return &proto.GetTransactionsResponse{
-		Transactions: []*proto.Transaction{
-			{
-				Id:          "1",
-				UserId:      req.UserId,
-				Amount:      100.0,
-				Description: "Sample transaction",
-				Timestamp:   "2023-01-01T00:00:00Z",
-			},
+type trxHistoryService struct {
+	// bisa tambahkan repo kalau pakai database
+	// repo Repository
+}
+
+// NewTrxHistoryService returns a new service instance
+func NewTrxHistoryService() TrxHistoryService {
+	return &trxHistoryService{}
+}
+
+// GetTransactions fetches transactions (dummy logic for now)
+func (s *trxHistoryService) GetTransactions(ctx context.Context, userID string) ([]*v1pb.Transaction, error) {
+	txns := []*v1pb.Transaction{
+		{
+			Id:          "1",
+			UserId:      userID,
+			Amount:      15000,
+			Description: "Topup",
+			Timestamp:   time.Now().Format(time.RFC3339),
 		},
-	}, nil
+	}
+	return txns, nil
 }
 
-func (s *Service) StoreTransaction(ctx context.Context, req *proto.Transaction) (*proto.StoreTransactionResponse, error) {
-	// Implement logic to store a transaction
-	return &proto.StoreTransactionResponse{
-		StatusMessage: "Transaction stored successfully",
-	}, nil
+// StoreTransaction saves a transaction (dummy logic)
+func (s *trxHistoryService) StoreTransaction(ctx context.Context, tx *v1pb.Transaction) error {
+	// simpan ke database kalau ada
+	return nil
 }
