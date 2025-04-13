@@ -64,6 +64,9 @@ type App struct {
 	MASTER_KEY                     string `env:"MASTER_KEY" yaml:"master_key"`
 	MS_GENERIC_REST_HOST_IN        string `env:"MS_GENERIC_REST_HOST_IN" yaml:"ms_generic_rest_host_in"`
 	DEV_MODE                       bool   `env:"DEV_MODE" yaml:"dev_mode"`
+	ENABLE_TLS                     bool
+	TLS_CERT_PATH                  string
+	TLS_KEY_PATH                   string
 }
 
 var ConfigApp *App
@@ -126,6 +129,9 @@ func InitConfig() (config *App, err error) {
 		MASTER_KEY:                     viper.GetString("MASTER_KEY"),
 		MS_GENERIC_REST_HOST_IN:        viper.GetString("MS_GENERIC_REST_HOST_IN"),
 		DEV_MODE:                       viper.GetBool("DEV_MODE"),
+		ENABLE_TLS:                     viper.GetBool("ENABLE_TLS"),
+		TLS_CERT_PATH:                  viper.GetString("TLS_CERT_PATH"),
+		TLS_KEY_PATH:                   viper.GetString("TLS_KEY_PATH"),
 	}
 
 	validate := validator.New()

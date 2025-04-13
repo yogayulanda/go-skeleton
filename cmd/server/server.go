@@ -6,46 +6,65 @@ import (
 	"os/signal"
 	"syscall"
 
+	"go.uber.org/zap"
+
 	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/config"
 	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/di"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/protocol/grpc"
+	grpc "gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/protocol/grpc"
 	grpcgateway "gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/protocol/grpc-gateway"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/utils"
 )
 
 func RunServer() {
-	// Load config
+	// Load configuration
 	cfg, err := config.InitConfig()
 	if err != nil {
-		panic(err)
+		panic("Failed to load configuration: " + err.Error())
 	}
 
-	// Init DI container
+	// Initialize DI container
 	container := di.InitContainer(cfg)
+	logger := container.Logger
 
-	// Run gRPC Server
+	logger.Info("📦 Configuration loaded",
+		zap.String("mode", cfg.APP_MODE),
+		zap.String("grpc_port", cfg.GRPCPORT),
+		zap.String("http_port", cfg.HTTPPORT),
+	)
+
+	// Start gRPC server in a separate goroutine
 	go func() {
 		grpcServer := grpc.NewGRPCServer(container)
-		if err := grpc.StartGRPCServer(container.Config.GRPCPORT, grpcServer); err != nil {
-			panic(err)
+		logger.Info("🚀 Starting gRPC server...",
+			zap.String("port", cfg.GRPCPORT),
+		)
+		if err := grpc.StartGRPCServer(cfg.GRPCPORT, grpcServer); err != nil {
+			logger.Fatal("❌ Failed to start gRPC server", zap.Error(err))
 		}
 	}()
 
-	// Run gRPC-Gateway Server (REST Proxy)
+	// Start gRPC-Gateway REST proxy in a separate goroutine
 	go func() {
+		logger.Info("🌐 Starting gRPC-Gateway (REST proxy)...",
+			zap.String("port", cfg.HTTPPORT),
+		)
 		if err := grpcgateway.RunServerGrpcGW(context.Background(), container); err != nil {
-			panic(err)
+			logger.Fatal("❌ Failed to start gRPC-Gateway", zap.Error(err))
 		}
 	}()
 
-	utils.LogAvailableEndpoints(container.Logger)
-	// Graceful shutdown handling
-	waitForShutdown()
+	// Wait for shutdown signal
+	waitForShutdown(logger)
 }
 
-// waitForShutdown handles OS signals and performs graceful shutdown if needed
-func waitForShutdown() {
+// waitForShutdown handles OS signals and performs graceful shutdown
+func waitForShutdown(logger *zap.Logger) {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-	<-stop
+	sig := <-stop
+
+	logger.Info("🛑 Shutdown signal received",
+		zap.String("signal", sig.String()),
+	)
+
+	logger.Info("✅ Server shutdown completed")
 }

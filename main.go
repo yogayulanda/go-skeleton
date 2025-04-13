@@ -38,6 +38,7 @@ var (
 
 func main() {
 	// Initialize logging
+
 	logging.InitLogger(false)
 	defer logging.SyncLogger()
 
