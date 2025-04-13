@@ -5,42 +5,36 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var Logger *zap.Logger
+var Log *zap.Logger
 
-func InitLogger(isProduction bool) {
+func InitLogger(appMode string) {
 	var err error
-	if isProduction {
-		Logger, err = zap.NewProduction()
+	if appMode == "PROD" {
+		Log, err = zap.NewProduction()
 	} else {
 		cfg := zap.NewDevelopmentConfig()
 
-		// Colorize log levels (INFO, ERROR, etc.)
 		cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 		cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
 		cfg.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
 
-		// Set output to stdout
 		cfg.OutputPaths = []string{"stdout"}
 		cfg.ErrorOutputPaths = []string{"stderr"}
 
-		Logger, err = cfg.Build()
+		Log, err = cfg.Build()
 	}
 
 	if err != nil {
 		panic("unable to initialize zap logger: " + err.Error())
 	}
+
+	// ⛳ Replace global zap logger so zap.L() also uses this config
+	zap.ReplaceGlobals(Log)
 }
 
 // SyncLogger flushes any buffered log entries
 func SyncLogger() {
-	if Logger != nil {
-		_ = Logger.Sync()
-	}
-}
-
-// Replace global zap logger with our instance (optional, useful for libraries that use zap.L())
-func ReplaceGlobals() {
-	if Logger != nil {
-		zap.ReplaceGlobals(Logger)
+	if Log != nil {
+		_ = Log.Sync()
 	}
 }

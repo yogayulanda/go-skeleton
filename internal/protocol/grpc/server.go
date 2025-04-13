@@ -15,8 +15,8 @@ import (
 func NewGRPCServer(container *di.Container) *grpc.Server {
 	// Manually chain unary interceptors
 	chainUnary := middleware.ChainUnaryServer(
-		middleware.UnaryPanicInterceptor(container.Logger),   // Panic recovery interceptor
-		middleware.UnaryLoggingInterceptor(container.Logger), // Logging interceptor
+		middleware.UnaryPanicInterceptor(container.Log),   // Panic recovery interceptor
+		middleware.UnaryLoggingInterceptor(container.Log), // Logging interceptor
 	)
 
 	// Stream interceptor (for stream requests)

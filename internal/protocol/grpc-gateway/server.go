@@ -26,8 +26,8 @@ func RunServerGrpcGW(ctx context.Context, container *di.Container) error {
 
 	// Middleware wrapper
 	handler := middleware.ChainMiddleware(
-		middleware.HTTPRequestLogger(container.Logger),
-		middleware.HTTPPanicRecovery(container.Logger),
+		middleware.HTTPRequestLogger(container.Log),
+		middleware.HTTPPanicRecovery(container.Log),
 		// Add other middleware here
 	)(mux)
 
@@ -56,9 +56,9 @@ func RunServerGrpcGW(ctx context.Context, container *di.Container) error {
 			MinVersion: tls.VersionTLS12,
 		}
 	}
-	utils.LogAvailableEndpoints(container.Logger)
+	utils.LogAvailableEndpoints()
 	// Log service started AFTER all init
-	container.Logger.Info("✅ if-trx-history service started successfully",
+	container.Log.Info("✅ if-trx-history service started successfully",
 		zap.String("version", "v1.0.0"),
 		zap.String("time", time.Now().Format(time.RFC3339)),
 	)
@@ -70,13 +70,13 @@ func RunServerGrpcGW(ctx context.Context, container *di.Container) error {
 		signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 		<-stop
 
-		container.Logger.Info("🛑 Shutting down HTTP server...")
+		container.Log.Info("🛑 Shutting down HTTP server...")
 
 		ctxTimeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 		defer cancel()
 
 		if err := srv.Shutdown(ctxTimeout); err != nil {
-			container.Logger.Error("❌ Failed to shutdown HTTP server gracefully", zap.Error(err))
+			container.Log.Error("❌ Failed to shutdown HTTP server gracefully", zap.Error(err))
 		}
 		close(idleConnsClosed)
 	}()

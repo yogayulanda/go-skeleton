@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/logging"
 	"go.uber.org/zap"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/proto"
@@ -8,7 +9,7 @@ import (
 	"google.golang.org/protobuf/reflect/protoregistry"
 )
 
-func LogAvailableEndpoints(logger *zap.Logger) {
+func LogAvailableEndpoints() {
 	protoregistry.GlobalFiles.RangeFiles(func(fd protoreflect.FileDescriptor) bool {
 		for i := 0; i < fd.Services().Len(); i++ {
 			svc := fd.Services().Get(i)
@@ -17,7 +18,7 @@ func LogAvailableEndpoints(logger *zap.Logger) {
 				opts := m.Options()
 				if opts != nil {
 					if httpRule, ok := proto.GetExtension(opts, annotations.E_Http).(*annotations.HttpRule); ok {
-						logHttpRule(logger, svc.FullName(), m.Name(), httpRule)
+						logHttpRule(logging.Log, svc.FullName(), m.Name(), httpRule)
 					}
 				}
 			}
@@ -25,7 +26,7 @@ func LogAvailableEndpoints(logger *zap.Logger) {
 		return true
 	})
 
-	logger.Info("✅ All available gRPC-Gateway endpoints have been listed")
+	logging.Log.Info("✅ All available gRPC-Gateway endpoints have been listed")
 }
 
 func logHttpRule(logger *zap.Logger, serviceName protoreflect.FullName, methodName protoreflect.Name, rule *annotations.HttpRule) {
@@ -43,7 +44,7 @@ func logHttpRule(logger *zap.Logger, serviceName protoreflect.FullName, methodNa
 		method, path = "PATCH", rule.GetPatch()
 	}
 
-	logger.Info("REST Endpoint registered",
+	logging.Log.Info("REST Endpoint registered",
 		zap.String("method", method),
 		zap.String("path", path),
 		zap.String("service", string(serviceName)),

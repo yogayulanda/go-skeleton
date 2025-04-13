@@ -9,16 +9,15 @@ import (
 
 type Container struct {
 	Config        *config.App
-	Logger        *zap.Logger
+	Log           *zap.Logger
 	TrxHandler    *handler.TrxHistoryHandler
 	HealthHandler *handler.HealthHandler
 }
 
 func InitContainer(cfg *config.App) *Container {
-	logging.InitLogger(cfg.APP_MODE == "PROD")
 	return &Container{
 		Config:        cfg,
-		Logger:        logging.Logger,
+		Log:           logging.Log,
 		TrxHandler:    handler.NewTrxHistoryHandler(),
 		HealthHandler: handler.NewHealthHandler(),
 	}

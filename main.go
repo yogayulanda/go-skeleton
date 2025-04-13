@@ -37,11 +37,6 @@ var (
 )
 
 func main() {
-	// Initialize logging
-
-	logging.InitLogger(false)
-	defer logging.SyncLogger()
-
 	// Initialize configuration using Viper
 	cobra.OnInitialize(config.Init)
 
@@ -51,7 +46,7 @@ func main() {
 
 	// Execute the root command
 	if err := rootCMD.Execute(); err != nil {
-		logging.Logger.Fatal("Command execution failed", zap.Error(err))
+		logging.Log.Fatal("Command execution failed", zap.Error(err))
 		os.Exit(1)
 	}
 }
