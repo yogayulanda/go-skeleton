@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/api/proto/gen/v1"
+	v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/gen/proto/v1"
 )
 
 // TrxHistoryHandler mengimplementasikan v1pb.TrxHistoryServiceServer

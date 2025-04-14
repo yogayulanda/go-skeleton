@@ -3,7 +3,7 @@ package handler
 import (
 	"context"
 
-	v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/api/proto/gen/v1"
+	v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/gen/proto/v1"
 	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/domain/history"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

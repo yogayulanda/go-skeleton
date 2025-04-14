@@ -3,7 +3,7 @@ package health
 import (
 	"context"
 
-	v1proto "gitlab.twprisma.com/fin/lmd/services/if-trx-history/api/proto/gen/v1" // Import for v1 Protobuf
+	v1proto "gitlab.twprisma.com/fin/lmd/services/if-trx-history/gen/proto/v1" // Import for v1 Protobuf
 	// Import for v2 Protobuf (if applicable)
 
 	"github.com/go-redis/redis/v8"

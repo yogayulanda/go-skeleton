@@ -1,0 +1,47 @@
+syntax = "proto3";
+
+package usermanagement.v1;
+
+import "google/api/annotations.proto";  // Import untuk gRPC-Gateway
+
+option go_package = "gitlab.twprisma.com/fin/lmd/services/if-trx-history/gen/proto/v1";  // Path import untuk v1
+
+// Definisi pesan User
+message User {
+    string id = 1;           // ID pengguna
+    string name = 2;           // Nama pengguna
+    string email = 3;        // Email pengguna
+}
+
+// Service untuk menangani pengguna
+service UserService {
+    // RPC untuk mendapatkan informasi pengguna
+    rpc GetUser (User) returns (User) {
+        option (google.api.http) = {
+            get: "/v1/users/{id}"  // HTTP GET dengan parameter id
+        };
+    }
+    
+    // RPC untuk membuat pengguna baru
+    rpc CreateUser (User) returns (User) {
+        option (google.api.http) = {
+            post: "/v1/users"
+            body: "*"
+        };
+    }
+    
+    // RPC untuk memperbarui informasi pengguna
+    rpc UpdateUser (User) returns (User) {
+        option (google.api.http) = {
+            put: "/v1/users/{id}"
+            body: "*"
+        };
+    }
+    
+    // RPC untuk menghapus pengguna
+    rpc DeleteUser (User) returns (User) {
+        option (google.api.http) = {
+            delete: "/v1/users/{id}"
+        };
+    }
+}

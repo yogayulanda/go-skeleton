@@ -1,94 +1,54 @@
-# Variabel untuk versi dan lokasi binary
-PROTOC_VERSION=3.21.12
-PROTOC_URL=https://github.com/protocolbuffers/protobuf/releases/download/v$(PROTOC_VERSION)/protoc-$(PROTOC_VERSION)-linux-x86_64.zip
-GOBIN=$(shell go env GOPATH)/bin
+BUF_VERSION ?= 1.52.1
+BUF_URL = https://github.com/bufbuild/buf/releases/download/v$(BUF_VERSION)/buf-Linux-x86_64.tar.gz
+INSTALL_DIR = /usr/local/bin
+BUF_BIN = $(INSTALL_DIR)/buf
 
-# Target untuk menginstal protoc dan plugin
-setup-env:
-	@echo " > Setting up environment"
-	@echo " > Checking for protoc..."
-	@if [ -x "$(shell which protoc)" ]; then \
-		echo " > protoc already installed"; \
-	else \
-		echo " > protoc not found"; \
-		fi
-	@if [ -x "$(shell which protoc)" ]; then \
-		echo " > protoc already installed"; \
-	else \
-		echo " > Installing protoc..."; \
-		wget -q -O /tmp/protoc.zip $(PROTOC_URL); \
-		unzip -o /tmp/protoc.zip -d /usr/local; \
-		rm /tmp/protoc.zip; \
-	fi
-	@echo " > Installing Go plugins..."
-	@go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-	@go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
-	@go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@latest
+PROTOC_GEN_GRPC_GATEWAY_VERSION = v2.18.0
+PROTOC_GEN_OPENAPIV2_VERSION = v2.18.0
 
-	@echo " > Setup complete"
+# Direktori yang digunakan
+PROTO_DIR = proto
+GEN_DIR = gen/proto
 
-# Target untuk generate proto files
-## generate-proto: Parse PROTO_FILES and generate output based on the options given
-PROTO_VERSIONS = v1 v2
+.PHONY: install-buf install-plugins clean install setup generate all
 
-generate-proto:
-	@echo "🚀 Generating proto files..."
-	@for version in $(PROTO_VERSIONS); do \
-		make generate-proto-version VERSION=$$version; \
-	done
+install-buf:
+	@echo "🔧 Installing Buf CLI v$(BUF_VERSION)..."
 
-generate-proto-version:
-	@echo "Generating proto files for version $(VERSION)..."
-	@echo "Checking if version folder api/proto/$(VERSION) exists..."
-
-	# Check if the folder for the specified version exists
-	@if [ ! -d "api/proto/$(VERSION)" ]; then \
-		echo "Error: Folder api/proto/$(VERSION) does not exist."; \
-		exit 1; \
+	@if [ -d "$(BUF_BIN)" ]; then \
+		echo "⚠️  Found directory at $(BUF_BIN), removing..."; \
+		sudo rm -rf $(BUF_BIN); \
 	fi
 
-	@echo "Checking if gen folder for version $(VERSION) exists..."
-	# Check if the gen folder for the version exists, if not, create it
-	@if [ ! -d "api/proto/gen/$(VERSION)" ]; then \
-		echo "Creating folder api/proto/gen/$(VERSION)..."; \
-		mkdir -p api/proto/gen/$(VERSION); \
-	fi
+	@curl -sSL $(BUF_URL) -o /tmp/buf.tar.gz
+	@tar -xzf /tmp/buf.tar.gz -C /tmp
+	@sudo mv /tmp/buf/bin/buf $(BUF_BIN)
+	@sudo chmod +x $(BUF_BIN)
 
-	@echo "Running protoc for Go and gRPC..."
-	@protoc -I=api/proto -I=api/proto/google/api --go_out=api/proto/gen/$(VERSION) --go-grpc_out=api/proto/gen/$(VERSION) api/proto/$(VERSION)/*.proto || { echo 'Error: Go and gRPC code generation failed.'; exit 1; }
-	@echo "Go and gRPC code generation completed for version $(VERSION)."
+	@echo "✅ Buf installed at $(BUF_BIN)"
+	@$(BUF_BIN) --version
 
-	@echo "Running protoc for gRPC Gateway..."
-	@protoc -I=api/proto -I=api/proto/google/api --grpc-gateway_out=api/proto/gen/$(VERSION) api/proto/$(VERSION)/*.proto || { echo 'Error: gRPC Gateway code generation failed.'; exit 1; }
-	@echo "gRPC Gateway code generation completed for version $(VERSION)."
-	
-	@echo "Running protoc for OpenAPI specification..."
-	@mkdir -p api/swagger/$(VERSION)
-	@protoc -I=api/proto -I=api/proto/google/api \
-		--openapiv2_out=api/swagger/$(VERSION) \
-		api/proto/$(VERSION)/*.proto || { echo 'Error: OpenAPI specification generation failed.'; exit 1; }
+install-plugins:
+	@echo "🔌 Installing gRPC Gateway and OpenAPI plugins..."
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@$(PROTOC_GEN_GRPC_GATEWAY_VERSION)
+	go install github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2@$(PROTOC_GEN_OPENAPIV2_VERSION)
 
-	# Move files from nested api/swagger/$(VERSION)/$(VERSION)/*.swagger.json to api/swagger/$(VERSION)
-	@find api/swagger/$(VERSION)/$(VERSION) -name "*.swagger.json" -exec mv {} api/swagger/$(VERSION)/ \;
-	@rm -rf api/swagger/$(VERSION)/$(VERSION)
+generate:
+	@echo "⚙️  Generating protobuf files with Buf..."
+	buf generate
 
-	@echo "OpenAPI specification generation completed for version $(VERSION)."
+clean:
+	@echo "🧹 Cleaning up generated files..."
+	rm -rf $(GEN_DIR)
+	rm -rf gen/swagger
 
+install: install-buf install-plugins
 
-# Variables
-GO := go
+setup: install generate
+
+all: setup
 
 # Run the server
 .PHONY: start
 start:
-	$(GO) run main.go server
-
-.PHONY: new-service
-new-service:
-	bash scripts/new-service.sh $(name)
-
-.PHONY: create-service
-create-service:
-	@read -p "Enter service name (e.g. report): " service; \
-	go run gen/gen.go $$service && make generate-proto
+	go run main.go server

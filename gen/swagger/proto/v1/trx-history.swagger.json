@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "v1/trx-history.proto",
+    "title": "proto/v1/trx-history.proto",
     "version": "version not set"
   },
   "tags": [
