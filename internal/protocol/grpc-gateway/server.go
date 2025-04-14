@@ -42,6 +42,8 @@ func RunServerGrpcGW(ctx context.Context, container *di.Container) error {
 		return fmt.Errorf("failed to register Health handler: %w", err)
 	}
 
+	// @auto:inject:handler
+
 	srv := &http.Server{
 		Addr:         fmt.Sprintf(":%s", container.Config.HTTPPORT),
 		Handler:      handler,

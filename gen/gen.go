@@ -21,18 +21,20 @@ func main() {
 	createFile("internal/domain/"+entityLower+"/service.go", "domain.tpl", entity, entityLower)
 	createTestFile("internal/domain/"+entityLower+"/service_test.go", "domain_test.tpl", entity, entityLower)
 
-	updateGRPCServer(entity)
+	updateGRPCServer("internal/protocol/grpc/server.go", entity, false)
+	updateGRPCServer("internal/protocol/grpc-gateway/server.go", entity, true)
 	updateDIContainer(entity, entityLower)
 
 	fmt.Println("✅ Generated handler and domain for:", entity)
 }
+
+// --- FILE CREATION ---
 
 func createProtoFile(path, tplFile, entity, entityLower string) {
 	if _, err := os.Stat(path); err == nil {
 		fmt.Println("⚠️  Proto file already exists:", path)
 		return
 	}
-
 	createFile(path, tplFile, entity, entityLower)
 }
 
@@ -57,33 +59,12 @@ func createFile(path, tplFile, entity, entityLower string) {
 	})
 }
 
-func updateGRPCServer(entity string) {
-	path := "internal/protocol/grpc/server.go"
-	content, err := os.ReadFile(path)
-	if err != nil {
-		fmt.Println("⚠️  grpc/server.go not found. Please update manually.")
+func createTestFile(path, tplFile, entity, entityLower string) {
+	if _, err := os.Stat(path); err == nil {
+		fmt.Println("⚠️  Test file already exists:", path)
 		return
 	}
-
-	lines := strings.Split(string(content), "\n")
-	var newLines []string
-
-	for _, line := range lines {
-		newLines = append(newLines, line)
-
-		if strings.Contains(line, "grpcServer := grpc.NewServer") {
-			newLines = append(newLines, fmt.Sprintf(
-				`	v1pb.Register%sServiceServer(grpcServer, container.%sHandler)`, entity, entity,
-			))
-		}
-	}
-
-	err = os.WriteFile(path, []byte(strings.Join(newLines, "\n")), 0644)
-	if err != nil {
-		fmt.Println("⚠️  Failed to update grpc/server.go:", err)
-	} else {
-		fmt.Println("🧩 Updated grpc/server.go with", entity, "Service")
-	}
+	createFile(path, tplFile, entity, entityLower)
 }
 
 func getDir(path string) string {
@@ -94,7 +75,48 @@ func getDir(path string) string {
 	return path[:idx]
 }
 
-// Opsional: auto-inject ke di/container.go
+// --- INJECT SERVER HANDLER ---
+
+func updateGRPCServer(path string, entity string, isGateway bool) {
+	content, err := os.ReadFile(path)
+	if err != nil {
+		fmt.Printf("⚠️  %s not found. Please update manually.\n", path)
+		return
+	}
+
+	lines := strings.Split(string(content), "\n")
+	var newLines []string
+	alreadyInjected := false
+
+	for _, line := range lines {
+		// Inject handler
+		if strings.Contains(line, "// @auto:inject:handler") && !alreadyInjected {
+			if isGateway {
+				newLines = append(newLines,
+					fmt.Sprintf(`	if err := v1pb.Register%sHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {`, entity),
+					fmt.Sprintf(`		return fmt.Errorf("failed to register %s handler: %%w", err)`, strings.ToLower(entity)),
+					`	}`,
+				)
+			} else {
+				newLines = append(newLines,
+					fmt.Sprintf(`	v1pb.Register%sServiceServer(grpcServer, container.%sHandler)`, entity, entity),
+				)
+			}
+			alreadyInjected = true
+		}
+		newLines = append(newLines, line)
+	}
+
+	err = os.WriteFile(path, []byte(strings.Join(newLines, "\n")), 0644)
+	if err != nil {
+		fmt.Printf("⚠️  Failed to update %s: %v\n", path, err)
+	} else {
+		fmt.Printf("🧩 Updated %s with %s handler\n", path, entity)
+	}
+}
+
+// --- INJECT DI CONTAINER ---
+
 func updateDIContainer(entity, entityLower string) {
 	path := "internal/di/container.go"
 
@@ -109,13 +131,10 @@ func updateDIContainer(entity, entityLower string) {
 	hasImported := false
 
 	for _, line := range lines {
-		// Tambahkan import domain jika belum ada
-		if strings.HasPrefix(line, "import (") {
+		if strings.HasPrefix(line, "import (") && !hasImported {
 			newLines = append(newLines, line)
-			if !hasImported {
-				newLines = append(newLines, fmt.Sprintf(`	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/domain/%s"`, entityLower))
-				hasImported = true
-			}
+			newLines = append(newLines, fmt.Sprintf(`	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/domain/%s"`, entityLower))
+			hasImported = true
 			continue
 		}
 
@@ -149,13 +168,4 @@ func updateDIContainer(entity, entityLower string) {
 	} else {
 		fmt.Println("🧩 Updated container.go with", entity, "Handler")
 	}
-}
-
-func createTestFile(path, tplFile, entity, entityLower string) {
-	if _, err := os.Stat(path); err == nil {
-		fmt.Println("⚠️  Test file already exists:", path)
-		return
-	}
-
-	createFile(path, tplFile, entity, entityLower)
 }

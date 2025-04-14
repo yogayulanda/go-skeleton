@@ -23,16 +23,18 @@ func NewGRPCServer(container *di.Container) *grpc.Server {
 	// chainStream := StreamLoggingInterceptor(container.Logger)
 
 	// Create the gRPC server with interceptors
-	server := grpc.NewServer(
+	grpcServer := grpc.NewServer(
 		grpc.UnaryInterceptor(chainUnary),
 		// grpc.StreamInterceptor(chainStream),
 	)
 
 	// Register the gRPC service handlers
-	v1pb.RegisterTrxHistoryServiceServer(server, container.TrxHandler)
-	v1pb.RegisterHealthServer(server, container.HealthHandler)
+	v1pb.RegisterTrxHistoryServiceServer(grpcServer, container.TrxHandler)
+	v1pb.RegisterHealthServer(grpcServer, container.HealthHandler)
 
-	return server
+	// @auto:inject:handler
+
+	return grpcServer
 }
 
 func StartGRPCServer(port string, server *grpc.Server) error {
