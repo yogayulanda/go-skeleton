@@ -180,3 +180,16 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - [gRPC](https://grpc.io/)
 - [grpc-gateway](https://github.com/grpc-ecosystem/grpc-gateway)
 - [Zap Logging](https://github.com/uber-go/zap)
+
+
+
+
+proto -> gen/proto/v1/user.pb.go      ✅ generated
+         ↓
+internal/handler/user_handler.go      ✅ interface ke proto
+         ↓
+internal/domain/user/service.go       ✅ logic bisnis
+         ↓
+internal/domain/user/repository.go    ✅ interface data access
+         ↓
+internal/database/user_repository.go  ✅ implementasi nyata (e.g., SQL)

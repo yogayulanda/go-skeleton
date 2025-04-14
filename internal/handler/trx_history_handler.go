@@ -11,7 +11,7 @@ import (
 
 type TrxHistoryHandler struct {
 	v1pb.UnimplementedTrxHistoryServiceServer
-	service history.TrxHistoryService
+	service *history.TrxHistoryService
 }
 
 func NewTrxHistoryHandler(service history.TrxHistoryService) *TrxHistoryHandler {

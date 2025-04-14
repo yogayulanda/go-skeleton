@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"go.uber.org/zap"
 
@@ -58,11 +59,11 @@ func RunServer() {
 	}()
 
 	// Wait for shutdown signal
-	waitForShutdown(log)
+	waitForShutdown(log, container)
 }
 
 // waitForShutdown handles OS signals and performs graceful shutdown
-func waitForShutdown(log *zap.Logger) {
+func waitForShutdown(log *zap.Logger, container *di.Container) {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-stop
@@ -70,6 +71,19 @@ func waitForShutdown(log *zap.Logger) {
 	log.Info("🛑 Shutdown signal received",
 		zap.String("signal", sig.String()),
 	)
+
+	// Perform any cleanup or graceful shutdown steps
+	// Example: Gracefully shutdown gRPC server or database connections
+	// container.DB.Close() // If you need to close DB connections
+
+	// Optionally, wait for ongoing requests to finish before shutting down
+	// Timeout to wait for graceful shutdown
+	_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	// Shutdown server gracefully
+	// For example, if you're using an HTTP server, you could use:
+	// server.Shutdown(ctx)
 
 	log.Info("✅ Server shutdown completed")
 }

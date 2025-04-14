@@ -14,6 +14,7 @@ type TrxHistoryService interface {
 }
 
 type trxHistoryService struct {
+	repository Repository
 	// bisa tambahkan repo kalau pakai database
 	// repo Repository
 }
