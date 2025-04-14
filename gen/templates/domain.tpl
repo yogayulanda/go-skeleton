@@ -1,9 +1,25 @@
 package {{.EntityLower}}
 
-type {{.Entity}}Service struct{}
+import (
+	"context"
+	v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/api/proto/gen/v1"
+)
+
+type {{.Entity}}Service struct {
+	// Add dependencies (e.g. repository, logger) here if needed
+}
 
 func New{{.Entity}}Service() *{{.Entity}}Service {
 	return &{{.Entity}}Service{}
 }
 
-// TODO: Implement business logic
+func (s *{{.Entity}}Service) Health(ctx context.Context, req *v1pb.HealthRequest) (*v1pb.HealthResponse, error) {
+    // Simulate health check logic
+	componentStatuses := make(map[string]string)
+	componentStatuses["redis"] = "OK"
+
+	return &v1pb.HealthResponse{
+	    HealthStatus:      "OK",
+		ComponentStatuses: componentStatuses, // You can generate real timestamp here
+	}, nil
+}
