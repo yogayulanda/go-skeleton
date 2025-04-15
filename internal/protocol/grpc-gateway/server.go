@@ -10,10 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/gen/proto/v1"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/di"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/middleware"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/utils"
+	v1pb "github.com/yogayulanda/if-trx-history/gen/proto/v1"
+	"github.com/yogayulanda/if-trx-history/internal/di"
+	"github.com/yogayulanda/if-trx-history/internal/middleware"
+	"github.com/yogayulanda/if-trx-history/internal/utils"
 	"go.uber.org/zap"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -35,10 +35,10 @@ func RunServerGrpcGW(ctx context.Context, container *di.Container) error {
 
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	if err := v1pb.RegisterTrxHistoryServiceHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {
+	if err := v1pb.RegisterTransactionHistoryServiceHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {
 		return fmt.Errorf("failed to register TrxHistory handler: %w", err)
 	}
-	if err := v1pb.RegisterHealthHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {
+	if err := v1pb.RegisterHealthServiceHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {
 		return fmt.Errorf("failed to register Health handler: %w", err)
 	}
 

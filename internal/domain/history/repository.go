@@ -1,38 +1,20 @@
 package history
 
 import (
-	"database/sql"
-	"log"
-
-	_ "github.com/go-sql-driver/mysql"
+	"context"
 )
 
-type TransactionRepository struct {
-	DB *sql.DB
-}
+// Repository adalah interface yang mendefinisikan operasi database untuk entitas trxHistory
+type Repository interface {
+	// Create menyimpan pengguna baru
+	Create(ctx context.Context, trxHistory *TransactionModel) (*TransactionModel, error)
 
-func NewTransactionRepository(dbURL string) *TransactionRepository {
-	db, err := sql.Open("mysql", dbURL)
-	if err != nil {
-		log.Fatalf("Error connecting to database: %v", err)
-	}
-	return &TransactionRepository{DB: db}
-}
+	// FindByEmail mencari pengguna berdasarkan email
+	FindByEmail(ctx context.Context, email string) (*TransactionModel, error)
 
-func (r *TransactionRepository) FetchTransactionHistory(userID string) ([]repository.Transaction, error) {
-	var transactions []repository.Transaction
-	rows, err := r.DB.Query("SELECT * FROM transactions WHERE user_id = ?", userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
+	// FindByID mencari pengguna berdasarkan ID
+	FindByID(ctx context.Context, id string) (*TransactionModel, error)
 
-	for rows.Next() {
-		var t repository.Transaction
-		if err := rows.Scan(&t.ID, &t.UserID, &t.Amount, &t.CreatedAt); err != nil {
-			return nil, err
-		}
-		transactions = append(transactions, t)
-	}
-	return transactions, nil
+	// Update memperbarui informasi pengguna
+	Update(ctx context.Context, trxHistory *TransactionModel) (*TransactionModel, error)
 }

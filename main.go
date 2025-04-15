@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/config"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/logging"
+	"github.com/yogayulanda/if-trx-history/internal/config"
+	"github.com/yogayulanda/if-trx-history/internal/logging"
 
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/cmd/server"
+	"github.com/yogayulanda/if-trx-history/cmd/server"
 
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"

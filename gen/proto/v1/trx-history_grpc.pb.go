@@ -19,111 +19,111 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Health_Check_FullMethodName = "/proto.v1.Health/Check"
+	HealthService_CheckHealth_FullMethodName = "/proto.v1.HealthService/CheckHealth"
 )
 
-// HealthClient is the client API for Health service.
+// HealthServiceClient is the client API for HealthService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // =====================
 // Health Check Service
 // =====================
-type HealthClient interface {
+type HealthServiceClient interface {
 	// Check the health status of the service and its dependencies
-	Check(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
+	CheckHealth(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error)
 }
 
-type healthClient struct {
+type healthServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewHealthClient(cc grpc.ClientConnInterface) HealthClient {
-	return &healthClient{cc}
+func NewHealthServiceClient(cc grpc.ClientConnInterface) HealthServiceClient {
+	return &healthServiceClient{cc}
 }
 
-func (c *healthClient) Check(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
+func (c *healthServiceClient) CheckHealth(ctx context.Context, in *HealthCheckRequest, opts ...grpc.CallOption) (*HealthCheckResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(HealthCheckResponse)
-	err := c.cc.Invoke(ctx, Health_Check_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, HealthService_CheckHealth_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// HealthServer is the server API for Health service.
-// All implementations must embed UnimplementedHealthServer
+// HealthServiceServer is the server API for HealthService service.
+// All implementations must embed UnimplementedHealthServiceServer
 // for forward compatibility.
 //
 // =====================
 // Health Check Service
 // =====================
-type HealthServer interface {
+type HealthServiceServer interface {
 	// Check the health status of the service and its dependencies
-	Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
-	mustEmbedUnimplementedHealthServer()
+	CheckHealth(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error)
+	mustEmbedUnimplementedHealthServiceServer()
 }
 
-// UnimplementedHealthServer must be embedded to have
+// UnimplementedHealthServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedHealthServer struct{}
+type UnimplementedHealthServiceServer struct{}
 
-func (UnimplementedHealthServer) Check(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
+func (UnimplementedHealthServiceServer) CheckHealth(context.Context, *HealthCheckRequest) (*HealthCheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CheckHealth not implemented")
 }
-func (UnimplementedHealthServer) mustEmbedUnimplementedHealthServer() {}
-func (UnimplementedHealthServer) testEmbeddedByValue()                {}
+func (UnimplementedHealthServiceServer) mustEmbedUnimplementedHealthServiceServer() {}
+func (UnimplementedHealthServiceServer) testEmbeddedByValue()                       {}
 
-// UnsafeHealthServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to HealthServer will
+// UnsafeHealthServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to HealthServiceServer will
 // result in compilation errors.
-type UnsafeHealthServer interface {
-	mustEmbedUnimplementedHealthServer()
+type UnsafeHealthServiceServer interface {
+	mustEmbedUnimplementedHealthServiceServer()
 }
 
-func RegisterHealthServer(s grpc.ServiceRegistrar, srv HealthServer) {
-	// If the following call pancis, it indicates UnimplementedHealthServer was
+func RegisterHealthServiceServer(s grpc.ServiceRegistrar, srv HealthServiceServer) {
+	// If the following call pancis, it indicates UnimplementedHealthServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&Health_ServiceDesc, srv)
+	s.RegisterService(&HealthService_ServiceDesc, srv)
 }
 
-func _Health_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _HealthService_CheckHealth_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(HealthCheckRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(HealthServer).Check(ctx, in)
+		return srv.(HealthServiceServer).CheckHealth(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Health_Check_FullMethodName,
+		FullMethod: HealthService_CheckHealth_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(HealthServer).Check(ctx, req.(*HealthCheckRequest))
+		return srv.(HealthServiceServer).CheckHealth(ctx, req.(*HealthCheckRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// Health_ServiceDesc is the grpc.ServiceDesc for Health service.
+// HealthService_ServiceDesc is the grpc.ServiceDesc for HealthService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var Health_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.v1.Health",
-	HandlerType: (*HealthServer)(nil),
+var HealthService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.v1.HealthService",
+	HandlerType: (*HealthServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Check",
-			Handler:    _Health_Check_Handler,
+			MethodName: "CheckHealth",
+			Handler:    _HealthService_CheckHealth_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
@@ -131,151 +131,152 @@ var Health_ServiceDesc = grpc.ServiceDesc{
 }
 
 const (
-	TrxHistoryService_GetTransactions_FullMethodName  = "/proto.v1.TrxHistoryService/GetTransactions"
-	TrxHistoryService_StoreTransaction_FullMethodName = "/proto.v1.TrxHistoryService/StoreTransaction"
+	TransactionHistoryService_GetTransactions_FullMethodName   = "/proto.v1.TransactionHistoryService/GetTransactions"
+	TransactionHistoryService_CreateTransaction_FullMethodName = "/proto.v1.TransactionHistoryService/CreateTransaction"
 )
 
-// TrxHistoryServiceClient is the client API for TrxHistoryService service.
+// TransactionHistoryServiceClient is the client API for TransactionHistoryService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
 // =====================
-// Transaction Service
+// Transaction History Service
 // =====================
-type TrxHistoryServiceClient interface {
+type TransactionHistoryServiceClient interface {
 	// Get a list of transactions for a user
 	GetTransactions(ctx context.Context, in *GetTransactionsRequest, opts ...grpc.CallOption) (*GetTransactionsResponse, error)
 	// Store a new transaction
-	StoreTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*StoreTransactionResponse, error)
+	CreateTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*CreateTransactionResponse, error)
 }
 
-type trxHistoryServiceClient struct {
+type transactionHistoryServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
-func NewTrxHistoryServiceClient(cc grpc.ClientConnInterface) TrxHistoryServiceClient {
-	return &trxHistoryServiceClient{cc}
+func NewTransactionHistoryServiceClient(cc grpc.ClientConnInterface) TransactionHistoryServiceClient {
+	return &transactionHistoryServiceClient{cc}
 }
 
-func (c *trxHistoryServiceClient) GetTransactions(ctx context.Context, in *GetTransactionsRequest, opts ...grpc.CallOption) (*GetTransactionsResponse, error) {
+func (c *transactionHistoryServiceClient) GetTransactions(ctx context.Context, in *GetTransactionsRequest, opts ...grpc.CallOption) (*GetTransactionsResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetTransactionsResponse)
-	err := c.cc.Invoke(ctx, TrxHistoryService_GetTransactions_FullMethodName, in, out, cOpts...)
+	err := c.cc.Invoke(ctx, TransactionHistoryService_GetTransactions_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *trxHistoryServiceClient) StoreTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*StoreTransactionResponse, error) {
+func (c *transactionHistoryServiceClient) CreateTransaction(ctx context.Context, in *Transaction, opts ...grpc.CallOption) (*CreateTransactionResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(StoreTransactionResponse)
-	err := c.cc.Invoke(ctx, TrxHistoryService_StoreTransaction_FullMethodName, in, out, cOpts...)
+	out := new(CreateTransactionResponse)
+	err := c.cc.Invoke(ctx, TransactionHistoryService_CreateTransaction_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-// TrxHistoryServiceServer is the server API for TrxHistoryService service.
-// All implementations must embed UnimplementedTrxHistoryServiceServer
+// TransactionHistoryServiceServer is the server API for TransactionHistoryService service.
+// All implementations must embed UnimplementedTransactionHistoryServiceServer
 // for forward compatibility.
 //
 // =====================
-// Transaction Service
+// Transaction History Service
 // =====================
-type TrxHistoryServiceServer interface {
+type TransactionHistoryServiceServer interface {
 	// Get a list of transactions for a user
 	GetTransactions(context.Context, *GetTransactionsRequest) (*GetTransactionsResponse, error)
 	// Store a new transaction
-	StoreTransaction(context.Context, *Transaction) (*StoreTransactionResponse, error)
-	mustEmbedUnimplementedTrxHistoryServiceServer()
+	CreateTransaction(context.Context, *Transaction) (*CreateTransactionResponse, error)
+	mustEmbedUnimplementedTransactionHistoryServiceServer()
 }
 
-// UnimplementedTrxHistoryServiceServer must be embedded to have
+// UnimplementedTransactionHistoryServiceServer must be embedded to have
 // forward compatible implementations.
 //
 // NOTE: this should be embedded by value instead of pointer to avoid a nil
 // pointer dereference when methods are called.
-type UnimplementedTrxHistoryServiceServer struct{}
+type UnimplementedTransactionHistoryServiceServer struct{}
 
-func (UnimplementedTrxHistoryServiceServer) GetTransactions(context.Context, *GetTransactionsRequest) (*GetTransactionsResponse, error) {
+func (UnimplementedTransactionHistoryServiceServer) GetTransactions(context.Context, *GetTransactionsRequest) (*GetTransactionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTransactions not implemented")
 }
-func (UnimplementedTrxHistoryServiceServer) StoreTransaction(context.Context, *Transaction) (*StoreTransactionResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StoreTransaction not implemented")
+func (UnimplementedTransactionHistoryServiceServer) CreateTransaction(context.Context, *Transaction) (*CreateTransactionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTransaction not implemented")
 }
-func (UnimplementedTrxHistoryServiceServer) mustEmbedUnimplementedTrxHistoryServiceServer() {}
-func (UnimplementedTrxHistoryServiceServer) testEmbeddedByValue()                           {}
+func (UnimplementedTransactionHistoryServiceServer) mustEmbedUnimplementedTransactionHistoryServiceServer() {
+}
+func (UnimplementedTransactionHistoryServiceServer) testEmbeddedByValue() {}
 
-// UnsafeTrxHistoryServiceServer may be embedded to opt out of forward compatibility for this service.
-// Use of this interface is not recommended, as added methods to TrxHistoryServiceServer will
+// UnsafeTransactionHistoryServiceServer may be embedded to opt out of forward compatibility for this service.
+// Use of this interface is not recommended, as added methods to TransactionHistoryServiceServer will
 // result in compilation errors.
-type UnsafeTrxHistoryServiceServer interface {
-	mustEmbedUnimplementedTrxHistoryServiceServer()
+type UnsafeTransactionHistoryServiceServer interface {
+	mustEmbedUnimplementedTransactionHistoryServiceServer()
 }
 
-func RegisterTrxHistoryServiceServer(s grpc.ServiceRegistrar, srv TrxHistoryServiceServer) {
-	// If the following call pancis, it indicates UnimplementedTrxHistoryServiceServer was
+func RegisterTransactionHistoryServiceServer(s grpc.ServiceRegistrar, srv TransactionHistoryServiceServer) {
+	// If the following call pancis, it indicates UnimplementedTransactionHistoryServiceServer was
 	// embedded by pointer and is nil.  This will cause panics if an
 	// unimplemented method is ever invoked, so we test this at initialization
 	// time to prevent it from happening at runtime later due to I/O.
 	if t, ok := srv.(interface{ testEmbeddedByValue() }); ok {
 		t.testEmbeddedByValue()
 	}
-	s.RegisterService(&TrxHistoryService_ServiceDesc, srv)
+	s.RegisterService(&TransactionHistoryService_ServiceDesc, srv)
 }
 
-func _TrxHistoryService_GetTransactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TransactionHistoryService_GetTransactions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetTransactionsRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrxHistoryServiceServer).GetTransactions(ctx, in)
+		return srv.(TransactionHistoryServiceServer).GetTransactions(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TrxHistoryService_GetTransactions_FullMethodName,
+		FullMethod: TransactionHistoryService_GetTransactions_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrxHistoryServiceServer).GetTransactions(ctx, req.(*GetTransactionsRequest))
+		return srv.(TransactionHistoryServiceServer).GetTransactions(ctx, req.(*GetTransactionsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _TrxHistoryService_StoreTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TransactionHistoryService_CreateTransaction_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(Transaction)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TrxHistoryServiceServer).StoreTransaction(ctx, in)
+		return srv.(TransactionHistoryServiceServer).CreateTransaction(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: TrxHistoryService_StoreTransaction_FullMethodName,
+		FullMethod: TransactionHistoryService_CreateTransaction_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TrxHistoryServiceServer).StoreTransaction(ctx, req.(*Transaction))
+		return srv.(TransactionHistoryServiceServer).CreateTransaction(ctx, req.(*Transaction))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-// TrxHistoryService_ServiceDesc is the grpc.ServiceDesc for TrxHistoryService service.
+// TransactionHistoryService_ServiceDesc is the grpc.ServiceDesc for TransactionHistoryService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
-var TrxHistoryService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "proto.v1.TrxHistoryService",
-	HandlerType: (*TrxHistoryServiceServer)(nil),
+var TransactionHistoryService_ServiceDesc = grpc.ServiceDesc{
+	ServiceName: "proto.v1.TransactionHistoryService",
+	HandlerType: (*TransactionHistoryServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "GetTransactions",
-			Handler:    _TrxHistoryService_GetTransactions_Handler,
+			Handler:    _TransactionHistoryService_GetTransactions_Handler,
 		},
 		{
-			MethodName: "StoreTransaction",
-			Handler:    _TrxHistoryService_StoreTransaction_Handler,
+			MethodName: "CreateTransaction",
+			Handler:    _TransactionHistoryService_CreateTransaction_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

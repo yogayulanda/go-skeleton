@@ -17,7 +17,7 @@ syntax = "proto3";
 
 package v1;
 
-option go_package = "gitlab.twprisma.com/fin/lmd/services/if-trx-history/api/proto/gen/v1;v1pb";
+option go_package = "github.com/yogayulanda/if-trx-history/api/proto/gen/v1;v1pb";
 
 service ${CAP_NAME}Service {
   rpc DoSomething(${CAP_NAME}Request) returns (${CAP_NAME}Response);
@@ -38,7 +38,7 @@ package handler
 
 import (
   "context"
-  v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/api/proto/gen/v1"
+  v1pb "github.com/yogayulanda/if-trx-history/api/proto/gen/v1"
 )
 
 type ${CAP_NAME}Handler struct {

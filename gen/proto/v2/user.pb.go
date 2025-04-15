@@ -127,7 +127,7 @@ const file_proto_v2_user_proto_rawDesc = "" +
 	"UpdateUser\x12\x17.usermanagement.v2.User\x1a\x17.usermanagement.v2.User\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\x1a\x0e/v2/users/{id}\x12V\n" +
 	"\n" +
 	"DeleteUser\x12\x17.usermanagement.v2.User\x1a\x17.usermanagement.v2.User\"\x16\x82\xd3\xe4\x93\x02\x10*\x0e/v2/users/{id}\x12h\n" +
-	"\x0eDeactivateUser\x12\x17.usermanagement.v2.User\x1a\x17.usermanagement.v2.User\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/v2/users/{id}/deactivateBBZ@gitlab.twprisma.com/fin/lmd/services/if-trx-history/gen/proto/v2b\x06proto3"
+	"\x0eDeactivateUser\x12\x17.usermanagement.v2.User\x1a\x17.usermanagement.v2.User\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\"\x19/v2/users/{id}/deactivateBBZ@github.com/yogayulanda/if-trx-history/gen/proto/v2b\x06proto3"
 
 var (
 	file_proto_v2_user_proto_rawDescOnce sync.Once

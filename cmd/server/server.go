@@ -9,11 +9,11 @@ import (
 
 	"go.uber.org/zap"
 
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/config"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/di"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/logging"
-	grpc "gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/protocol/grpc"
-	grpcgateway "gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/protocol/grpc-gateway"
+	"github.com/yogayulanda/if-trx-history/internal/config"
+	"github.com/yogayulanda/if-trx-history/internal/di"
+	"github.com/yogayulanda/if-trx-history/internal/logging"
+	grpc "github.com/yogayulanda/if-trx-history/internal/protocol/grpc"
+	grpcgateway "github.com/yogayulanda/if-trx-history/internal/protocol/grpc-gateway"
 )
 
 func RunServer() {

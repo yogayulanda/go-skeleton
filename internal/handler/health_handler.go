@@ -3,12 +3,12 @@ package handler
 import (
 	"context"
 
-	v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/gen/proto/v1"
+	v1pb "github.com/yogayulanda/if-trx-history/gen/proto/v1"
 )
 
 // TrxHistoryHandler mengimplementasikan v1pb.TrxHistoryServiceServer
 type HealthHandler struct {
-	v1pb.UnimplementedHealthServer
+	v1pb.UnimplementedHealthServiceServer
 }
 
 func NewHealthHandler() *HealthHandler {

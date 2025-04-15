@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net"
 
-	v1pb "gitlab.twprisma.com/fin/lmd/services/if-trx-history/gen/proto/v1"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/di"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/middleware"
+	v1pb "github.com/yogayulanda/if-trx-history/gen/proto/v1"
+	"github.com/yogayulanda/if-trx-history/internal/di"
+	"github.com/yogayulanda/if-trx-history/internal/middleware"
 
 	"google.golang.org/grpc"
 )
@@ -29,8 +29,9 @@ func NewGRPCServer(container *di.Container) *grpc.Server {
 	)
 
 	// Register the gRPC service handlers
-	v1pb.RegisterTrxHistoryServiceServer(grpcServer, container.TrxHandler)
-	v1pb.RegisterHealthServer(grpcServer, container.HealthHandler)
+	v1pb.RegisterUserServiceServer(grpcServer, container.UserHandler)
+	v1pb.RegisterTransactionHistoryServiceServer(grpcServer, container.TrxHandler)
+	v1pb.RegisterHealthServiceServer(grpcServer, container.HealthHandler)
 
 	// @auto:inject:handler
 

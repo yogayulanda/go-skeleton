@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/logging"
+	"github.com/yogayulanda/if-trx-history/internal/logging"
 	"go.uber.org/zap"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/proto"

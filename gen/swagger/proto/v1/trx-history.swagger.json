@@ -6,10 +6,10 @@
   },
   "tags": [
     {
-      "name": "Health"
+      "name": "HealthService"
     },
     {
-      "name": "TrxHistoryService"
+      "name": "TransactionHistoryService"
     }
   ],
   "consumes": [
@@ -22,7 +22,7 @@
     "/v1/health": {
       "get": {
         "summary": "Check the health status of the service and its dependencies",
-        "operationId": "Health_Check",
+        "operationId": "HealthService_CheckHealth",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -38,14 +38,14 @@
           }
         },
         "tags": [
-          "Health"
+          "HealthService"
         ]
       }
     },
     "/v1/transactions": {
       "get": {
         "summary": "Get a list of transactions for a user",
-        "operationId": "TrxHistoryService_GetTransactions",
+        "operationId": "TransactionHistoryService_GetTransactions",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -67,20 +67,27 @@
             "in": "query",
             "required": false,
             "type": "string"
+          },
+          {
+            "name": "authToken",
+            "description": "Authentication token (if required)",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
-          "TrxHistoryService"
+          "TransactionHistoryService"
         ]
       },
       "post": {
         "summary": "Store a new transaction",
-        "operationId": "TrxHistoryService_StoreTransaction",
+        "operationId": "TransactionHistoryService_CreateTransaction",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/v1StoreTransactionResponse"
+              "$ref": "#/definitions/v1CreateTransactionResponse"
             }
           },
           "default": {
@@ -101,7 +108,7 @@
           }
         ],
         "tags": [
-          "TrxHistoryService"
+          "TransactionHistoryService"
         ]
       }
     }
@@ -135,6 +142,20 @@
         }
       }
     },
+    "v1CreateTransactionResponse": {
+      "type": "object",
+      "properties": {
+        "statusMessage": {
+          "type": "string",
+          "title": "Status message of the transaction"
+        },
+        "transactionId": {
+          "type": "string",
+          "title": "Newly created transaction ID"
+        }
+      },
+      "title": "Response message for creating a new transaction"
+    },
     "v1GetTransactionsResponse": {
       "type": "object",
       "properties": {
@@ -145,6 +166,10 @@
             "$ref": "#/definitions/v1Transaction"
           },
           "title": "List of transactions"
+        },
+        "statusMessage": {
+          "type": "string",
+          "title": "Optional status message"
         }
       },
       "title": "Response message containing a list of transactions"
@@ -165,16 +190,6 @@
         }
       },
       "title": "Response message for health check"
-    },
-    "v1StoreTransactionResponse": {
-      "type": "object",
-      "properties": {
-        "statusMessage": {
-          "type": "string",
-          "title": "Status message of the transaction"
-        }
-      },
-      "title": "Response message for storing a transaction"
     },
     "v1Transaction": {
       "type": "object",
@@ -198,7 +213,12 @@
         },
         "timestamp": {
           "type": "string",
+          "format": "date-time",
           "title": "Timestamp of the transaction"
+        },
+        "status": {
+          "type": "string",
+          "title": "e.g., \"SUCCESS\", \"FAILED\""
         }
       },
       "title": "Transaction message representing a single transaction"

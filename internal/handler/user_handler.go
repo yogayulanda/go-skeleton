@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 
-	userProto "gitlab.twprisma.com/fin/lmd/services/if-trx-history/gen/proto/v1"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/domain/user"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/utils"
+	userProto "github.com/yogayulanda/if-trx-history/gen/proto/v1"
+	"github.com/yogayulanda/if-trx-history/internal/domain/user"
+	"github.com/yogayulanda/if-trx-history/internal/utils"
 )
 
 type UserHandler struct {

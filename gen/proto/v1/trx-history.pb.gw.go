@@ -31,36 +31,36 @@ var _ = runtime.String
 var _ = utilities.NewDoubleArray
 var _ = metadata.Join
 
-func request_Health_Check_0(ctx context.Context, marshaler runtime.Marshaler, client HealthClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_HealthService_CheckHealth_0(ctx context.Context, marshaler runtime.Marshaler, client HealthServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq HealthCheckRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := client.Check(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CheckHealth(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_Health_Check_0(ctx context.Context, marshaler runtime.Marshaler, server HealthServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_HealthService_CheckHealth_0(ctx context.Context, marshaler runtime.Marshaler, server HealthServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq HealthCheckRequest
 	var metadata runtime.ServerMetadata
 
-	msg, err := server.Check(ctx, &protoReq)
+	msg, err := server.CheckHealth(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
 var (
-	filter_TrxHistoryService_GetTransactions_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
+	filter_TransactionHistoryService_GetTransactions_0 = &utilities.DoubleArray{Encoding: map[string]int{}, Base: []int(nil), Check: []int(nil)}
 )
 
-func request_TrxHistoryService_GetTransactions_0(ctx context.Context, marshaler runtime.Marshaler, client TrxHistoryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_TransactionHistoryService_GetTransactions_0(ctx context.Context, marshaler runtime.Marshaler, client TransactionHistoryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetTransactionsRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_TrxHistoryService_GetTransactions_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_TransactionHistoryService_GetTransactions_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -69,14 +69,14 @@ func request_TrxHistoryService_GetTransactions_0(ctx context.Context, marshaler 
 
 }
 
-func local_request_TrxHistoryService_GetTransactions_0(ctx context.Context, marshaler runtime.Marshaler, server TrxHistoryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_TransactionHistoryService_GetTransactions_0(ctx context.Context, marshaler runtime.Marshaler, server TransactionHistoryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq GetTransactionsRequest
 	var metadata runtime.ServerMetadata
 
 	if err := req.ParseForm(); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
-	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_TrxHistoryService_GetTransactions_0); err != nil {
+	if err := runtime.PopulateQueryParameters(&protoReq, req.Form, filter_TransactionHistoryService_GetTransactions_0); err != nil {
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
@@ -85,7 +85,7 @@ func local_request_TrxHistoryService_GetTransactions_0(ctx context.Context, mars
 
 }
 
-func request_TrxHistoryService_StoreTransaction_0(ctx context.Context, marshaler runtime.Marshaler, client TrxHistoryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func request_TransactionHistoryService_CreateTransaction_0(ctx context.Context, marshaler runtime.Marshaler, client TransactionHistoryServiceClient, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq Transaction
 	var metadata runtime.ServerMetadata
 
@@ -97,12 +97,12 @@ func request_TrxHistoryService_StoreTransaction_0(ctx context.Context, marshaler
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := client.StoreTransaction(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
+	msg, err := client.CreateTransaction(ctx, &protoReq, grpc.Header(&metadata.HeaderMD), grpc.Trailer(&metadata.TrailerMD))
 	return msg, metadata, err
 
 }
 
-func local_request_TrxHistoryService_StoreTransaction_0(ctx context.Context, marshaler runtime.Marshaler, server TrxHistoryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
+func local_request_TransactionHistoryService_CreateTransaction_0(ctx context.Context, marshaler runtime.Marshaler, server TransactionHistoryServiceServer, req *http.Request, pathParams map[string]string) (proto.Message, runtime.ServerMetadata, error) {
 	var protoReq Transaction
 	var metadata runtime.ServerMetadata
 
@@ -114,18 +114,18 @@ func local_request_TrxHistoryService_StoreTransaction_0(ctx context.Context, mar
 		return nil, metadata, status.Errorf(codes.InvalidArgument, "%v", err)
 	}
 
-	msg, err := server.StoreTransaction(ctx, &protoReq)
+	msg, err := server.CreateTransaction(ctx, &protoReq)
 	return msg, metadata, err
 
 }
 
-// RegisterHealthHandlerServer registers the http handlers for service Health to "mux".
-// UnaryRPC     :call HealthServer directly.
+// RegisterHealthServiceHandlerServer registers the http handlers for service HealthService to "mux".
+// UnaryRPC     :call HealthServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterHealthHandlerFromEndpoint instead.
-func RegisterHealthHandlerServer(ctx context.Context, mux *runtime.ServeMux, server HealthServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterHealthServiceHandlerFromEndpoint instead.
+func RegisterHealthServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server HealthServiceServer) error {
 
-	mux.Handle("GET", pattern_Health_Check_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_HealthService_CheckHealth_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -133,12 +133,12 @@ func RegisterHealthHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.Health/Check", runtime.WithHTTPPathPattern("/v1/health"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.HealthService/CheckHealth", runtime.WithHTTPPathPattern("/v1/health"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_Health_Check_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_HealthService_CheckHealth_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -146,20 +146,20 @@ func RegisterHealthHandlerServer(ctx context.Context, mux *runtime.ServeMux, ser
 			return
 		}
 
-		forward_Health_Check_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_HealthService_CheckHealth_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterTrxHistoryServiceHandlerServer registers the http handlers for service TrxHistoryService to "mux".
-// UnaryRPC     :call TrxHistoryServiceServer directly.
+// RegisterTransactionHistoryServiceHandlerServer registers the http handlers for service TransactionHistoryService to "mux".
+// UnaryRPC     :call TransactionHistoryServiceServer directly.
 // StreamingRPC :currently unsupported pending https://github.com/grpc/grpc-go/issues/906.
-// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterTrxHistoryServiceHandlerFromEndpoint instead.
-func RegisterTrxHistoryServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server TrxHistoryServiceServer) error {
+// Note that using this registration option will cause many gRPC library features to stop working. Consider using RegisterTransactionHistoryServiceHandlerFromEndpoint instead.
+func RegisterTransactionHistoryServiceHandlerServer(ctx context.Context, mux *runtime.ServeMux, server TransactionHistoryServiceServer) error {
 
-	mux.Handle("GET", pattern_TrxHistoryService_GetTransactions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_TransactionHistoryService_GetTransactions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -167,12 +167,12 @@ func RegisterTrxHistoryServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.TrxHistoryService/GetTransactions", runtime.WithHTTPPathPattern("/v1/transactions"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.TransactionHistoryService/GetTransactions", runtime.WithHTTPPathPattern("/v1/transactions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TrxHistoryService_GetTransactions_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TransactionHistoryService_GetTransactions_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -180,11 +180,11 @@ func RegisterTrxHistoryServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_TrxHistoryService_GetTransactions_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_TransactionHistoryService_GetTransactions_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_TrxHistoryService_StoreTransaction_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_TransactionHistoryService_CreateTransaction_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		var stream runtime.ServerTransportStream
@@ -192,12 +192,12 @@ func RegisterTrxHistoryServiceHandlerServer(ctx context.Context, mux *runtime.Se
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.TrxHistoryService/StoreTransaction", runtime.WithHTTPPathPattern("/v1/transactions"))
+		annotatedContext, err = runtime.AnnotateIncomingContext(ctx, mux, req, "/proto.v1.TransactionHistoryService/CreateTransaction", runtime.WithHTTPPathPattern("/v1/transactions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := local_request_TrxHistoryService_StoreTransaction_0(annotatedContext, inboundMarshaler, server, req, pathParams)
+		resp, md, err := local_request_TransactionHistoryService_CreateTransaction_0(annotatedContext, inboundMarshaler, server, req, pathParams)
 		md.HeaderMD, md.TrailerMD = metadata.Join(md.HeaderMD, stream.Header()), metadata.Join(md.TrailerMD, stream.Trailer())
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
@@ -205,16 +205,16 @@ func RegisterTrxHistoryServiceHandlerServer(ctx context.Context, mux *runtime.Se
 			return
 		}
 
-		forward_TrxHistoryService_StoreTransaction_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_TransactionHistoryService_CreateTransaction_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
 	return nil
 }
 
-// RegisterHealthHandlerFromEndpoint is same as RegisterHealthHandler but
+// RegisterHealthServiceHandlerFromEndpoint is same as RegisterHealthServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterHealthHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterHealthServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.DialContext(ctx, endpoint, opts...)
 	if err != nil {
 		return err
@@ -234,41 +234,41 @@ func RegisterHealthHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMu
 		}()
 	}()
 
-	return RegisterHealthHandler(ctx, mux, conn)
+	return RegisterHealthServiceHandler(ctx, mux, conn)
 }
 
-// RegisterHealthHandler registers the http handlers for service Health to "mux".
+// RegisterHealthServiceHandler registers the http handlers for service HealthService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterHealthHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterHealthHandlerClient(ctx, mux, NewHealthClient(conn))
+func RegisterHealthServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterHealthServiceHandlerClient(ctx, mux, NewHealthServiceClient(conn))
 }
 
-// RegisterHealthHandlerClient registers the http handlers for service Health
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "HealthClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "HealthClient"
+// RegisterHealthServiceHandlerClient registers the http handlers for service HealthService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "HealthServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "HealthServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "HealthClient" to call the correct interceptors.
-func RegisterHealthHandlerClient(ctx context.Context, mux *runtime.ServeMux, client HealthClient) error {
+// "HealthServiceClient" to call the correct interceptors.
+func RegisterHealthServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client HealthServiceClient) error {
 
-	mux.Handle("GET", pattern_Health_Check_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_HealthService_CheckHealth_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/proto.v1.Health/Check", runtime.WithHTTPPathPattern("/v1/health"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/proto.v1.HealthService/CheckHealth", runtime.WithHTTPPathPattern("/v1/health"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_Health_Check_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_HealthService_CheckHealth_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_Health_Check_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_HealthService_CheckHealth_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -276,16 +276,16 @@ func RegisterHealthHandlerClient(ctx context.Context, mux *runtime.ServeMux, cli
 }
 
 var (
-	pattern_Health_Check_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "health"}, ""))
+	pattern_HealthService_CheckHealth_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "health"}, ""))
 )
 
 var (
-	forward_Health_Check_0 = runtime.ForwardResponseMessage
+	forward_HealthService_CheckHealth_0 = runtime.ForwardResponseMessage
 )
 
-// RegisterTrxHistoryServiceHandlerFromEndpoint is same as RegisterTrxHistoryServiceHandler but
+// RegisterTransactionHistoryServiceHandlerFromEndpoint is same as RegisterTransactionHistoryServiceHandler but
 // automatically dials to "endpoint" and closes the connection when "ctx" gets done.
-func RegisterTrxHistoryServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
+func RegisterTransactionHistoryServiceHandlerFromEndpoint(ctx context.Context, mux *runtime.ServeMux, endpoint string, opts []grpc.DialOption) (err error) {
 	conn, err := grpc.DialContext(ctx, endpoint, opts...)
 	if err != nil {
 		return err
@@ -305,63 +305,63 @@ func RegisterTrxHistoryServiceHandlerFromEndpoint(ctx context.Context, mux *runt
 		}()
 	}()
 
-	return RegisterTrxHistoryServiceHandler(ctx, mux, conn)
+	return RegisterTransactionHistoryServiceHandler(ctx, mux, conn)
 }
 
-// RegisterTrxHistoryServiceHandler registers the http handlers for service TrxHistoryService to "mux".
+// RegisterTransactionHistoryServiceHandler registers the http handlers for service TransactionHistoryService to "mux".
 // The handlers forward requests to the grpc endpoint over "conn".
-func RegisterTrxHistoryServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
-	return RegisterTrxHistoryServiceHandlerClient(ctx, mux, NewTrxHistoryServiceClient(conn))
+func RegisterTransactionHistoryServiceHandler(ctx context.Context, mux *runtime.ServeMux, conn *grpc.ClientConn) error {
+	return RegisterTransactionHistoryServiceHandlerClient(ctx, mux, NewTransactionHistoryServiceClient(conn))
 }
 
-// RegisterTrxHistoryServiceHandlerClient registers the http handlers for service TrxHistoryService
-// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "TrxHistoryServiceClient".
-// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "TrxHistoryServiceClient"
+// RegisterTransactionHistoryServiceHandlerClient registers the http handlers for service TransactionHistoryService
+// to "mux". The handlers forward requests to the grpc endpoint over the given implementation of "TransactionHistoryServiceClient".
+// Note: the gRPC framework executes interceptors within the gRPC handler. If the passed in "TransactionHistoryServiceClient"
 // doesn't go through the normal gRPC flow (creating a gRPC client etc.) then it will be up to the passed in
-// "TrxHistoryServiceClient" to call the correct interceptors.
-func RegisterTrxHistoryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client TrxHistoryServiceClient) error {
+// "TransactionHistoryServiceClient" to call the correct interceptors.
+func RegisterTransactionHistoryServiceHandlerClient(ctx context.Context, mux *runtime.ServeMux, client TransactionHistoryServiceClient) error {
 
-	mux.Handle("GET", pattern_TrxHistoryService_GetTransactions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("GET", pattern_TransactionHistoryService_GetTransactions_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/proto.v1.TrxHistoryService/GetTransactions", runtime.WithHTTPPathPattern("/v1/transactions"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/proto.v1.TransactionHistoryService/GetTransactions", runtime.WithHTTPPathPattern("/v1/transactions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TrxHistoryService_GetTransactions_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TransactionHistoryService_GetTransactions_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_TrxHistoryService_GetTransactions_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_TransactionHistoryService_GetTransactions_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
-	mux.Handle("POST", pattern_TrxHistoryService_StoreTransaction_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
+	mux.Handle("POST", pattern_TransactionHistoryService_CreateTransaction_0, func(w http.ResponseWriter, req *http.Request, pathParams map[string]string) {
 		ctx, cancel := context.WithCancel(req.Context())
 		defer cancel()
 		inboundMarshaler, outboundMarshaler := runtime.MarshalerForRequest(mux, req)
 		var err error
 		var annotatedContext context.Context
-		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/proto.v1.TrxHistoryService/StoreTransaction", runtime.WithHTTPPathPattern("/v1/transactions"))
+		annotatedContext, err = runtime.AnnotateContext(ctx, mux, req, "/proto.v1.TransactionHistoryService/CreateTransaction", runtime.WithHTTPPathPattern("/v1/transactions"))
 		if err != nil {
 			runtime.HTTPError(ctx, mux, outboundMarshaler, w, req, err)
 			return
 		}
-		resp, md, err := request_TrxHistoryService_StoreTransaction_0(annotatedContext, inboundMarshaler, client, req, pathParams)
+		resp, md, err := request_TransactionHistoryService_CreateTransaction_0(annotatedContext, inboundMarshaler, client, req, pathParams)
 		annotatedContext = runtime.NewServerMetadataContext(annotatedContext, md)
 		if err != nil {
 			runtime.HTTPError(annotatedContext, mux, outboundMarshaler, w, req, err)
 			return
 		}
 
-		forward_TrxHistoryService_StoreTransaction_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
+		forward_TransactionHistoryService_CreateTransaction_0(annotatedContext, mux, outboundMarshaler, w, req, resp, mux.GetForwardResponseOptions()...)
 
 	})
 
@@ -369,13 +369,13 @@ func RegisterTrxHistoryServiceHandlerClient(ctx context.Context, mux *runtime.Se
 }
 
 var (
-	pattern_TrxHistoryService_GetTransactions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "transactions"}, ""))
+	pattern_TransactionHistoryService_GetTransactions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "transactions"}, ""))
 
-	pattern_TrxHistoryService_StoreTransaction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "transactions"}, ""))
+	pattern_TransactionHistoryService_CreateTransaction_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "transactions"}, ""))
 )
 
 var (
-	forward_TrxHistoryService_GetTransactions_0 = runtime.ForwardResponseMessage
+	forward_TransactionHistoryService_GetTransactions_0 = runtime.ForwardResponseMessage
 
-	forward_TrxHistoryService_StoreTransaction_0 = runtime.ForwardResponseMessage
+	forward_TransactionHistoryService_CreateTransaction_0 = runtime.ForwardResponseMessage
 )

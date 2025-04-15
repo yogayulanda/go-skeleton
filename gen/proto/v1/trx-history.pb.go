@@ -10,6 +10,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -115,7 +116,8 @@ func (x *HealthCheckResponse) GetComponentStatuses() map[string]string {
 // Request message for fetching transactions
 type GetTransactionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // User ID to fetch transactions for
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`          // User ID to fetch transactions for
+	AuthToken     string                 `protobuf:"bytes,2,opt,name=auth_token,json=authToken,proto3" json:"auth_token,omitempty"` // Authentication token (if required)
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -157,10 +159,18 @@ func (x *GetTransactionsRequest) GetUserId() string {
 	return ""
 }
 
+func (x *GetTransactionsRequest) GetAuthToken() string {
+	if x != nil {
+		return x.AuthToken
+	}
+	return ""
+}
+
 // Response message containing a list of transactions
 type GetTransactionsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Transactions  []*Transaction         `protobuf:"bytes,1,rep,name=transactions,proto3" json:"transactions,omitempty"` // List of transactions
+	Transactions  []*Transaction         `protobuf:"bytes,1,rep,name=transactions,proto3" json:"transactions,omitempty"`                        // List of transactions
+	StatusMessage string                 `protobuf:"bytes,2,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"` // Optional status message
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -202,6 +212,13 @@ func (x *GetTransactionsResponse) GetTransactions() []*Transaction {
 	return nil
 }
 
+func (x *GetTransactionsResponse) GetStatusMessage() string {
+	if x != nil {
+		return x.StatusMessage
+	}
+	return ""
+}
+
 // Transaction message representing a single transaction
 type Transaction struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -209,7 +226,8 @@ type Transaction struct {
 	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // User ID
 	Amount        float64                `protobuf:"fixed64,3,opt,name=amount,proto3" json:"amount,omitempty"`             // Transaction amount
 	Description   string                 `protobuf:"bytes,4,opt,name=description,proto3" json:"description,omitempty"`     // Description of the transaction
-	Timestamp     string                 `protobuf:"bytes,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`         // Timestamp of the transaction
+	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=timestamp,proto3" json:"timestamp,omitempty"`         // Timestamp of the transaction
+	Status        string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`               // e.g., "SUCCESS", "FAILED"
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -272,35 +290,43 @@ func (x *Transaction) GetDescription() string {
 	return ""
 }
 
-func (x *Transaction) GetTimestamp() string {
+func (x *Transaction) GetTimestamp() *timestamppb.Timestamp {
 	if x != nil {
 		return x.Timestamp
+	}
+	return nil
+}
+
+func (x *Transaction) GetStatus() string {
+	if x != nil {
+		return x.Status
 	}
 	return ""
 }
 
-// Response message for storing a transaction
-type StoreTransactionResponse struct {
+// Response message for creating a new transaction
+type CreateTransactionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	StatusMessage string                 `protobuf:"bytes,1,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"` // Status message of the transaction
+	TransactionId string                 `protobuf:"bytes,2,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"` // Newly created transaction ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *StoreTransactionResponse) Reset() {
-	*x = StoreTransactionResponse{}
+func (x *CreateTransactionResponse) Reset() {
+	*x = CreateTransactionResponse{}
 	mi := &file_proto_v1_trx_history_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *StoreTransactionResponse) String() string {
+func (x *CreateTransactionResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*StoreTransactionResponse) ProtoMessage() {}
+func (*CreateTransactionResponse) ProtoMessage() {}
 
-func (x *StoreTransactionResponse) ProtoReflect() protoreflect.Message {
+func (x *CreateTransactionResponse) ProtoReflect() protoreflect.Message {
 	mi := &file_proto_v1_trx_history_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
@@ -312,14 +338,21 @@ func (x *StoreTransactionResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StoreTransactionResponse.ProtoReflect.Descriptor instead.
-func (*StoreTransactionResponse) Descriptor() ([]byte, []int) {
+// Deprecated: Use CreateTransactionResponse.ProtoReflect.Descriptor instead.
+func (*CreateTransactionResponse) Descriptor() ([]byte, []int) {
 	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *StoreTransactionResponse) GetStatusMessage() string {
+func (x *CreateTransactionResponse) GetStatusMessage() string {
 	if x != nil {
 		return x.StatusMessage
+	}
+	return ""
+}
+
+func (x *CreateTransactionResponse) GetTransactionId() string {
+	if x != nil {
+		return x.TransactionId
 	}
 	return ""
 }
@@ -328,32 +361,37 @@ var File_proto_v1_trx_history_proto protoreflect.FileDescriptor
 
 const file_proto_v1_trx_history_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/v1/trx-history.proto\x12\bproto.v1\x1a\x1cgoogle/api/annotations.proto\"\x14\n" +
+	"\x1aproto/v1/trx-history.proto\x12\bproto.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"\x14\n" +
 	"\x12HealthCheckRequest\"\xe5\x01\n" +
 	"\x13HealthCheckResponse\x12#\n" +
 	"\rhealth_status\x18\x01 \x01(\tR\fhealthStatus\x12c\n" +
 	"\x12component_statuses\x18\x02 \x03(\v24.proto.v1.HealthCheckResponse.ComponentStatusesEntryR\x11componentStatuses\x1aD\n" +
 	"\x16ComponentStatusesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"1\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"P\n" +
 	"\x16GetTransactionsRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"T\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
+	"\n" +
+	"auth_token\x18\x02 \x01(\tR\tauthToken\"{\n" +
 	"\x17GetTransactionsResponse\x129\n" +
-	"\ftransactions\x18\x01 \x03(\v2\x15.proto.v1.TransactionR\ftransactions\"\x8e\x01\n" +
+	"\ftransactions\x18\x01 \x03(\v2\x15.proto.v1.TransactionR\ftransactions\x12%\n" +
+	"\x0estatus_message\x18\x02 \x01(\tR\rstatusMessage\"\xc2\x01\n" +
 	"\vTransaction\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x16\n" +
 	"\x06amount\x18\x03 \x01(\x01R\x06amount\x12 \n" +
-	"\vdescription\x18\x04 \x01(\tR\vdescription\x12\x1c\n" +
-	"\ttimestamp\x18\x05 \x01(\tR\ttimestamp\"A\n" +
-	"\x18StoreTransactionResponse\x12%\n" +
-	"\x0estatus_message\x18\x01 \x01(\tR\rstatusMessage2b\n" +
-	"\x06Health\x12X\n" +
-	"\x05Check\x12\x1c.proto.v1.HealthCheckRequest\x1a\x1d.proto.v1.HealthCheckResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
-	"/v1/health2\xf1\x01\n" +
-	"\x11TrxHistoryService\x12p\n" +
-	"\x0fGetTransactions\x12 .proto.v1.GetTransactionsRequest\x1a!.proto.v1.GetTransactionsResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/transactions\x12j\n" +
-	"\x10StoreTransaction\x12\x15.proto.v1.Transaction\x1a\".proto.v1.StoreTransactionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/transactionsBIZGgitlab.twprisma.com/fin/lmd/services/if-trx-history/api/proto/gen/v1;v1b\x06proto3"
+	"\vdescription\x18\x04 \x01(\tR\vdescription\x128\n" +
+	"\ttimestamp\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\ttimestamp\x12\x16\n" +
+	"\x06status\x18\x06 \x01(\tR\x06status\"i\n" +
+	"\x19CreateTransactionResponse\x12%\n" +
+	"\x0estatus_message\x18\x01 \x01(\tR\rstatusMessage\x12%\n" +
+	"\x0etransaction_id\x18\x02 \x01(\tR\rtransactionId2o\n" +
+	"\rHealthService\x12^\n" +
+	"\vCheckHealth\x12\x1c.proto.v1.HealthCheckRequest\x1a\x1d.proto.v1.HealthCheckResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
+	"/v1/health2\xfb\x01\n" +
+	"\x19TransactionHistoryService\x12p\n" +
+	"\x0fGetTransactions\x12 .proto.v1.GetTransactionsRequest\x1a!.proto.v1.GetTransactionsResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/transactions\x12l\n" +
+	"\x11CreateTransaction\x12\x15.proto.v1.Transaction\x1a#.proto.v1.CreateTransactionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/transactionsBIZGgithub.com/yogayulanda/if-trx-history/api/proto/gen/v1;v1b\x06proto3"
 
 var (
 	file_proto_v1_trx_history_proto_rawDescOnce sync.Once
@@ -369,28 +407,30 @@ func file_proto_v1_trx_history_proto_rawDescGZIP() []byte {
 
 var file_proto_v1_trx_history_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_proto_v1_trx_history_proto_goTypes = []any{
-	(*HealthCheckRequest)(nil),       // 0: proto.v1.HealthCheckRequest
-	(*HealthCheckResponse)(nil),      // 1: proto.v1.HealthCheckResponse
-	(*GetTransactionsRequest)(nil),   // 2: proto.v1.GetTransactionsRequest
-	(*GetTransactionsResponse)(nil),  // 3: proto.v1.GetTransactionsResponse
-	(*Transaction)(nil),              // 4: proto.v1.Transaction
-	(*StoreTransactionResponse)(nil), // 5: proto.v1.StoreTransactionResponse
-	nil,                              // 6: proto.v1.HealthCheckResponse.ComponentStatusesEntry
+	(*HealthCheckRequest)(nil),        // 0: proto.v1.HealthCheckRequest
+	(*HealthCheckResponse)(nil),       // 1: proto.v1.HealthCheckResponse
+	(*GetTransactionsRequest)(nil),    // 2: proto.v1.GetTransactionsRequest
+	(*GetTransactionsResponse)(nil),   // 3: proto.v1.GetTransactionsResponse
+	(*Transaction)(nil),               // 4: proto.v1.Transaction
+	(*CreateTransactionResponse)(nil), // 5: proto.v1.CreateTransactionResponse
+	nil,                               // 6: proto.v1.HealthCheckResponse.ComponentStatusesEntry
+	(*timestamppb.Timestamp)(nil),     // 7: google.protobuf.Timestamp
 }
 var file_proto_v1_trx_history_proto_depIdxs = []int32{
 	6, // 0: proto.v1.HealthCheckResponse.component_statuses:type_name -> proto.v1.HealthCheckResponse.ComponentStatusesEntry
 	4, // 1: proto.v1.GetTransactionsResponse.transactions:type_name -> proto.v1.Transaction
-	0, // 2: proto.v1.Health.Check:input_type -> proto.v1.HealthCheckRequest
-	2, // 3: proto.v1.TrxHistoryService.GetTransactions:input_type -> proto.v1.GetTransactionsRequest
-	4, // 4: proto.v1.TrxHistoryService.StoreTransaction:input_type -> proto.v1.Transaction
-	1, // 5: proto.v1.Health.Check:output_type -> proto.v1.HealthCheckResponse
-	3, // 6: proto.v1.TrxHistoryService.GetTransactions:output_type -> proto.v1.GetTransactionsResponse
-	5, // 7: proto.v1.TrxHistoryService.StoreTransaction:output_type -> proto.v1.StoreTransactionResponse
-	5, // [5:8] is the sub-list for method output_type
-	2, // [2:5] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	7, // 2: proto.v1.Transaction.timestamp:type_name -> google.protobuf.Timestamp
+	0, // 3: proto.v1.HealthService.CheckHealth:input_type -> proto.v1.HealthCheckRequest
+	2, // 4: proto.v1.TransactionHistoryService.GetTransactions:input_type -> proto.v1.GetTransactionsRequest
+	4, // 5: proto.v1.TransactionHistoryService.CreateTransaction:input_type -> proto.v1.Transaction
+	1, // 6: proto.v1.HealthService.CheckHealth:output_type -> proto.v1.HealthCheckResponse
+	3, // 7: proto.v1.TransactionHistoryService.GetTransactions:output_type -> proto.v1.GetTransactionsResponse
+	5, // 8: proto.v1.TransactionHistoryService.CreateTransaction:output_type -> proto.v1.CreateTransactionResponse
+	6, // [6:9] is the sub-list for method output_type
+	3, // [3:6] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_proto_v1_trx_history_proto_init() }

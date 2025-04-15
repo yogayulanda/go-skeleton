@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/config"
+	"github.com/yogayulanda/if-trx-history/internal/config"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 )

@@ -1,12 +1,12 @@
 package di
 
 import (
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/config"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/database"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/domain/history"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/domain/user"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/handler"
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/logging"
+	"github.com/yogayulanda/if-trx-history/internal/config"
+	"github.com/yogayulanda/if-trx-history/internal/database"
+	"github.com/yogayulanda/if-trx-history/internal/domain/history"
+	"github.com/yogayulanda/if-trx-history/internal/domain/user"
+	"github.com/yogayulanda/if-trx-history/internal/handler"
+	"github.com/yogayulanda/if-trx-history/internal/logging"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -18,6 +18,7 @@ type Container struct {
 	HealthHandler *handler.HealthHandler
 	UserHandler   *handler.UserHandler
 	UserService   *user.Service
+	TrxService    *history.TrxHistoryService
 	DB            *gorm.DB // Koneksi database SQL Server
 }
 
@@ -30,22 +31,26 @@ func InitContainer(cfg *config.App) *Container {
 
 	// Repository dan Service untuk User
 	userRepo := user.NewSQLRepository(db)
+	trxHistoryRepo := history.NewSQLRepository(db)
+
+	trxHistoryService := history.NewTrxHistoryService(trxHistoryRepo)
 	userService := user.NewService(userRepo)
 
 	// Handler untuk User
 	userHandler := handler.NewUserHandler(userService)
 
 	// Handler lainnya
-	trxService := history.NewTrxHistoryService()
+	trxHistoryHandler := handler.NewTrxHistoryHandler(trxHistoryService)
 
 	// Inisialisasi DI Container
 	return &Container{
 		Config:        cfg,
 		Log:           logging.Log,
-		TrxHandler:    handler.NewTrxHistoryHandler(trxService),
+		TrxHandler:    trxHistoryHandler,
 		HealthHandler: handler.NewHealthHandler(),
 		UserHandler:   userHandler,
 		UserService:   userService,
+		TrxService:    trxHistoryService,
 		DB:            db, // Menyuntikkan koneksi database ke dalam container
 	}
 }

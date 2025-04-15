@@ -4,7 +4,7 @@ package usermanagement.v2;
 
 import "google/api/annotations.proto";  // Import untuk gRPC-Gateway
 
-option go_package = "gitlab.twprisma.com/fin/lmd/services/if-trx-history/gen/proto/v2";  // Path import untuk v2
+option go_package = "github.com/yogayulanda/if-trx-history/gen/proto/v2";  // Path import untuk v2
 
 // Definisi pesan User untuk v2 (dengan perubahan)
 message User {

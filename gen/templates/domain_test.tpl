@@ -3,7 +3,7 @@ package {{.EntityLower}}_test
 import (
 	"testing"
 
-	"gitlab.twprisma.com/fin/lmd/services/if-trx-history/internal/domain/{{.EntityLower}}"
+	"github.com/yogayulanda/if-trx-history/internal/domain/{{.EntityLower}}"
 )
 
 func TestNew{{.Entity}}Service(t *testing.T) {
