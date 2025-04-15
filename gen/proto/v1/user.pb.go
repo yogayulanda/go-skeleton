@@ -484,7 +484,7 @@ const file_proto_v1_user_proto_rawDesc = "" +
 	"\n" +
 	"UpdateUser\x12\x1a.user.v1.UpdateUserRequest\x1a\x1b.user.v1.UpdateUserResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\x1a\x0e/v1/users/{id}\x12]\n" +
 	"\n" +
-	"DeleteUser\x12\x1a.user.v1.DeleteUserRequest\x1a\x1b.user.v1.DeleteUserResponse\"\x16\x82\xd3\xe4\x93\x02\x10*\x0e/v1/users/{id}BBZ@github.com/yogayulanda/go-skeleton/gen/proto/v1b\x06proto3"
+	"DeleteUser\x12\x1a.user.v1.DeleteUserRequest\x1a\x1b.user.v1.DeleteUserResponse\"\x16\x82\xd3\xe4\x93\x02\x10*\x0e/v1/users/{id}B1Z/github.com/yogayulanda/go-skeleton/gen/proto/v1b\x06proto3"
 
 var (
 	file_proto_v1_user_proto_rawDescOnce sync.Once

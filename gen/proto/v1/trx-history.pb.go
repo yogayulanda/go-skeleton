@@ -391,7 +391,7 @@ const file_proto_v1_trx_history_proto_rawDesc = "" +
 	"/v1/health2\xfb\x01\n" +
 	"\x19TransactionHistoryService\x12p\n" +
 	"\x0fGetTransactions\x12 .proto.v1.GetTransactionsRequest\x1a!.proto.v1.GetTransactionsResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/transactions\x12l\n" +
-	"\x11CreateTransaction\x12\x15.proto.v1.Transaction\x1a#.proto.v1.CreateTransactionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/transactionsBIZGgithub.com/yogayulanda/go-skeleton/api/proto/gen/v1;v1b\x06proto3"
+	"\x11CreateTransaction\x12\x15.proto.v1.Transaction\x1a#.proto.v1.CreateTransactionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/transactionsB8Z6github.com/yogayulanda/go-skeleton/api/proto/gen/v1;v1b\x06proto3"
 
 var (
 	file_proto_v1_trx_history_proto_rawDescOnce sync.Once
