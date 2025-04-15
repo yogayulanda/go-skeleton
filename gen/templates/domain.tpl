@@ -2,7 +2,7 @@ package {{.EntityLower}}
 
 import (
 	"context"
-	v1pb "github.com/yogayulanda/if-trx-history/api/proto/gen/v1"
+	v1pb "github.com/yogayulanda/go-skeleton/api/proto/gen/v1"
 )
 
 type {{.Entity}}Service struct {

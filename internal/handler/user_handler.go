@@ -3,9 +3,9 @@ package handler
 import (
 	"context"
 
-	userProto "github.com/yogayulanda/if-trx-history/gen/proto/v1"
-	"github.com/yogayulanda/if-trx-history/internal/domain/user"
-	"github.com/yogayulanda/if-trx-history/internal/utils"
+	userProto "github.com/yogayulanda/go-skeleton/gen/proto/v1"
+	"github.com/yogayulanda/go-skeleton/internal/domain/user"
+	"github.com/yogayulanda/go-skeleton/internal/utils"
 )
 
 type UserHandler struct {

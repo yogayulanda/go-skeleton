@@ -3,7 +3,7 @@ package database
 import (
 	"fmt"
 
-	"github.com/yogayulanda/if-trx-history/internal/config"
+	"github.com/yogayulanda/go-skeleton/internal/config"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 )

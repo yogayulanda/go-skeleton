@@ -1,12 +1,12 @@
 package di
 
 import (
-	"github.com/yogayulanda/if-trx-history/internal/config"
-	"github.com/yogayulanda/if-trx-history/internal/database"
-	"github.com/yogayulanda/if-trx-history/internal/domain/history"
-	"github.com/yogayulanda/if-trx-history/internal/domain/user"
-	"github.com/yogayulanda/if-trx-history/internal/handler"
-	"github.com/yogayulanda/if-trx-history/internal/logging"
+	"github.com/yogayulanda/go-skeleton/internal/config"
+	"github.com/yogayulanda/go-skeleton/internal/database"
+	"github.com/yogayulanda/go-skeleton/internal/domain/history"
+	"github.com/yogayulanda/go-skeleton/internal/domain/user"
+	"github.com/yogayulanda/go-skeleton/internal/handler"
+	"github.com/yogayulanda/go-skeleton/internal/logging"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )

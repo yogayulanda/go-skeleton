@@ -9,11 +9,11 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/yogayulanda/if-trx-history/internal/config"
-	"github.com/yogayulanda/if-trx-history/internal/di"
-	"github.com/yogayulanda/if-trx-history/internal/logging"
-	grpc "github.com/yogayulanda/if-trx-history/internal/protocol/grpc"
-	grpcgateway "github.com/yogayulanda/if-trx-history/internal/protocol/grpc-gateway"
+	"github.com/yogayulanda/go-skeleton/internal/config"
+	"github.com/yogayulanda/go-skeleton/internal/di"
+	"github.com/yogayulanda/go-skeleton/internal/logging"
+	grpc "github.com/yogayulanda/go-skeleton/internal/protocol/grpc"
+	grpcgateway "github.com/yogayulanda/go-skeleton/internal/protocol/grpc-gateway"
 )
 
 func RunServer() {

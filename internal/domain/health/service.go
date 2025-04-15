@@ -3,7 +3,7 @@ package health
 import (
 	"context"
 
-	v1proto "github.com/yogayulanda/if-trx-history/gen/proto/v1" // Import for v1 Protobuf
+	v1proto "github.com/yogayulanda/go-skeleton/gen/proto/v1" // Import for v1 Protobuf
 	// Import for v2 Protobuf (if applicable)
 
 	"github.com/go-redis/redis/v8"

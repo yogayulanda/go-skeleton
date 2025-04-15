@@ -3,7 +3,7 @@ package history
 import (
 	"context"
 
-	v1pb "github.com/yogayulanda/if-trx-history/gen/proto/v1"
+	v1pb "github.com/yogayulanda/go-skeleton/gen/proto/v1"
 )
 
 type TrxHistoryService struct {

@@ -10,10 +10,10 @@ import (
 	"syscall"
 	"time"
 
-	v1pb "github.com/yogayulanda/if-trx-history/gen/proto/v1"
-	"github.com/yogayulanda/if-trx-history/internal/di"
-	"github.com/yogayulanda/if-trx-history/internal/middleware"
-	"github.com/yogayulanda/if-trx-history/internal/utils"
+	v1pb "github.com/yogayulanda/go-skeleton/gen/proto/v1"
+	"github.com/yogayulanda/go-skeleton/internal/di"
+	"github.com/yogayulanda/go-skeleton/internal/middleware"
+	"github.com/yogayulanda/go-skeleton/internal/utils"
 	"go.uber.org/zap"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -60,7 +60,7 @@ func RunServerGrpcGW(ctx context.Context, container *di.Container) error {
 	}
 	utils.LogAvailableEndpoints()
 	// Log service started AFTER all init
-	container.Log.Info("✅ if-trx-history service started successfully",
+	container.Log.Info("✅ go-skeleton service started successfully",
 		zap.String("version", "v1.0.0"),
 		zap.String("time", time.Now().Format(time.RFC3339)),
 	)

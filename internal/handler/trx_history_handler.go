@@ -3,8 +3,8 @@ package handler
 import (
 	"context"
 
-	v1pb "github.com/yogayulanda/if-trx-history/gen/proto/v1"
-	"github.com/yogayulanda/if-trx-history/internal/domain/history"
+	v1pb "github.com/yogayulanda/go-skeleton/gen/proto/v1"
+	"github.com/yogayulanda/go-skeleton/internal/domain/history"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

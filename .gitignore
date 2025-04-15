@@ -9,7 +9,7 @@
 
 # Output of the `build` command
 /build/
-if-trx-history
+go-skeleton
 
 # Dependency directories
 /vendor/

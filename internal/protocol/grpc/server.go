@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"net"
 
-	v1pb "github.com/yogayulanda/if-trx-history/gen/proto/v1"
-	"github.com/yogayulanda/if-trx-history/internal/di"
-	"github.com/yogayulanda/if-trx-history/internal/middleware"
+	v1pb "github.com/yogayulanda/go-skeleton/gen/proto/v1"
+	"github.com/yogayulanda/go-skeleton/internal/di"
+	"github.com/yogayulanda/go-skeleton/internal/middleware"
 
 	"google.golang.org/grpc"
 )

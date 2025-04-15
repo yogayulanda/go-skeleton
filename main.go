@@ -3,10 +3,10 @@ package main
 import (
 	"os"
 
-	"github.com/yogayulanda/if-trx-history/internal/config"
-	"github.com/yogayulanda/if-trx-history/internal/logging"
+	"github.com/yogayulanda/go-skeleton/internal/config"
+	"github.com/yogayulanda/go-skeleton/internal/logging"
 
-	"github.com/yogayulanda/if-trx-history/cmd/server"
+	"github.com/yogayulanda/go-skeleton/cmd/server"
 
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"
@@ -14,9 +14,9 @@ import (
 
 var (
 	rootCMD = &cobra.Command{
-		Use:   "if-trx-history",
-		Short: "if-trx-history service",
-		Long:  "A command-line interface for managing and running the if-trx-history service.",
+		Use:   "go-skeleton",
+		Short: "go-skeleton service",
+		Long:  "A command-line interface for managing and running the go-skeleton service.",
 	}
 
 	configCMD = &cobra.Command{

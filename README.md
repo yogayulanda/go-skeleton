@@ -1,17 +1,47 @@
-# if-trx-history
+# go-skeleton
 
-`if-trx-history` is a gRPC-based microservice for managing transaction history. It includes a gRPC-Gateway for RESTful API access and supports health checks, transaction management, and integration with Redis, Kafka, and SQL databases.
+`go-skeleton` is a gRPC-based microservice designed to Service GO. It provides both gRPC and RESTful APIs, supports health checks, and integrates with SQL Server, Redis, and Kafka.
 
 ---
 
 ## Features
 
-- **gRPC and REST API**: Provides both gRPC and RESTful endpoints for managing transactions.
-- **Health Checks**: Monitors the health of Redis, Kafka, and the database.
+- **gRPC and REST API**: Offers gRPC endpoints and RESTful APIs via gRPC-Gateway.
+- **Health Checks**: Monitors the health of dependencies like Redis, Kafka, and SQL Server.
 - **Protobuf Integration**: Uses Protocol Buffers for API definitions.
-- **Environment Configuration**: Configurable via `.env` file.
-- **Logging**: Structured logging using `zap`.
-- **Database Support**: Supports MySQL, SQL Server, and MongoDB.
+- **Database Support**: SQL Server integration using GORM.
+- **Logging**: Structured logging with `zap`.
+- **Code Generation**: Automated generation of handlers, domains, and containers from `.proto` files.
+
+---
+
+## Project Structure
+
+### Root Files
+- **`go.mod`**: Go module dependencies.
+- **`Makefile`**: Automates tasks like building, testing, and generating code.
+- **`buf.yaml`**: Configuration for Buf, a tool for managing Protobuf files.
+- **`buf.gen.yaml`**: Defines plugins for generating gRPC, REST, and OpenAPI code.
+
+### Key Directories
+- **`cmd/server`**: Contains the entry point for the gRPC server.
+- **`gen`**: Auto-generated code from Protobuf files.
+  - **`proto/v1`**: Generated gRPC and REST code for version 1 APIs.
+  - **`proto/v2`**: Generated gRPC and REST code for version 2 APIs.
+  - **`swagger`**: OpenAPI specifications for REST APIs.
+- **`internal`**: Core business logic and utilities.
+  - **`config`**: Application configuration management.
+  - **`database`**: Database connection setup.
+  - **`di`**: Dependency injection container.
+  - **`domain`**: Business logic for different modules (e.g., `health`, `history`, `report`, `user`).
+  - **`handler`**: gRPC and REST handlers for services.
+  - **`middleware`**: Middleware for logging and error recovery.
+  - **`protocol`**: Protocol-specific server configurations (gRPC and gRPC-Gateway).
+  - **`utils`**: Utility functions (e.g., Swagger integration).
+- **`proto`**: Source Protobuf files for API definitions.
+  - **`v1`**: Protobuf files for version 1 APIs.
+  - **`v2`**: Protobuf files for version 2 APIs.
+- **`scripts`**: Helper scripts for creating new services.
 
 ---
 
@@ -19,9 +49,10 @@
 
 - **Go**: Version 1.20 or later.
 - **Protobuf Compiler**: Version 3.21.12 or later.
+- **Buf CLI**: For managing Protobuf files.
+- **SQL Server**: For database storage.
 - **Redis**: For caching and health checks.
 - **Kafka**: For message streaming.
-- **MySQL/SQL Server/MongoDB**: For database storage.
 
 ---
 
@@ -30,7 +61,7 @@
 1. Clone the repository:
    ```bash
    git clone <repository-url>
-   cd if-trx-history
+   cd go-skeleton
    ```
 
 2. Install dependencies:
@@ -38,14 +69,14 @@
    go mod tidy
    ```
 
-3. Set up the environment:
+3. Install Buf CLI:
    ```bash
-   make setup-env
+   make install-buf
    ```
 
 4. Generate Protobuf files:
    ```bash
-   make generate-proto
+   make generate
    ```
 
 ---
@@ -61,13 +92,11 @@
    ```properties
    GRPC_PORT=8081
    HTTP_PORT=8080
-   REDIS_ADDR=localhost:6379
-   KAFKA_BROKER=localhost:9092
-   DB_MYSQL_USER_APPS=root
-   DB_MYSQL_PASS_APPS=password
-   DB_MYSQL_NAME_APPS=mydb
-   DB_MYSQL_HOST_APPS=localhost
-   DB_MYSQL_PORT_APPS=3306
+   MSSQL_DB=mydb
+   MSSQL_USER=root
+   MSSQL_PASSWORD=password
+   MSSQL_HOST=localhost
+   MSSQL_PORT=1433
    ```
 
 ---
@@ -95,23 +124,14 @@ make test
 
 ---
 
-## API Documentation
-
-### gRPC Endpoints
-
-- **Health Check**: `/v1/health`
-- **Get Transactions**: `/v1/transactions`
-- **Store Transaction**: `/v1/transactions`
-
-### REST Endpoints
-
-- **Health Check**: `GET /v1/health`
-- **Get Transactions**: `GET /v1/transactions`
-- **Store Transaction**: `POST /v1/transactions`
-
----
-
 ## Development
+
+### Code Generation
+
+Generate gRPC, REST, and OpenAPI code from Protobuf files:
+```bash
+make generate
+```
 
 ### Debugging
 
@@ -143,7 +163,23 @@ make lint
    make build
    ```
 
-2. Deploy the binary (`if-trx-history`) to your server.
+2. Deploy the binary (`go-skeleton`) to your server.
+
+---
+
+## API Documentation
+
+### gRPC Endpoints
+
+- **Health Check**: `/v1/health`
+- **Get Transactions**: `/v1/transactions`
+- **Store Transaction**: `/v1/transactions`
+
+### REST Endpoints
+
+- **Health Check**: `GET /v1/health`
+- **Get Transactions**: `GET /v1/transactions`
+- **Store Transaction**: `POST /v1/transactions`
 
 ---
 
@@ -180,16 +216,3 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 - [gRPC](https://grpc.io/)
 - [grpc-gateway](https://github.com/grpc-ecosystem/grpc-gateway)
 - [Zap Logging](https://github.com/uber-go/zap)
-
-
-
-
-proto -> gen/proto/v1/user.pb.go      ✅ generated
-         ↓
-internal/handler/user_handler.go      ✅ interface ke proto
-         ↓
-internal/domain/user/service.go       ✅ logic bisnis
-         ↓
-internal/domain/user/repository.go    ✅ interface data access
-         ↓
-internal/database/user_repository.go  ✅ implementasi nyata (e.g., SQL)
