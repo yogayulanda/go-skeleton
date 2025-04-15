@@ -7,83 +7,60 @@ import (
 	"syscall"
 	"time"
 
-	"go.uber.org/zap"
-
 	"github.com/yogayulanda/go-skeleton/internal/config"
 	"github.com/yogayulanda/go-skeleton/internal/di"
-	"github.com/yogayulanda/go-skeleton/internal/logging"
 	grpc "github.com/yogayulanda/go-skeleton/internal/protocol/grpc"
 	grpcgateway "github.com/yogayulanda/go-skeleton/internal/protocol/grpc-gateway"
+	"go.uber.org/zap"
 )
 
-func RunServer() {
-	// Load configuration
-	cfg, err := config.InitConfig()
-	if err != nil {
-		panic("Failed to load configuration: " + err.Error())
-	}
-
-	// Initialize logger
-	logging.InitLogger(cfg.APP_MODE)
-	defer logging.SyncLogger()
-
-	// Initialize DI container
-	container := di.InitContainer(cfg)
-	log := container.Log
-
-	log.Info("📦 Configuration loaded",
-		zap.String("mode", cfg.APP_MODE),
-		zap.String("grpc_port", cfg.GRPCPORT),
-		zap.String("http_port", cfg.HTTPPORT),
-	)
-
+// RunServer starts both the gRPC and HTTP servers, utilizing DI container for dependencies.
+func RunServer(container *di.Container, log *zap.Logger, cfg *config.App) {
 	// Start gRPC server in a separate goroutine
-	go func() {
-		grpcServer := grpc.NewGRPCServer(container)
-		log.Info("🚀 Starting gRPC server...",
-			zap.String("port", cfg.GRPCPORT),
-		)
-		if err := grpc.StartGRPCServer(cfg.GRPCPORT, grpcServer); err != nil {
-			log.Fatal("❌ Failed to start gRPC server", zap.Error(err))
-		}
-	}()
+	go startGRPCServer(container, log, cfg)
 
 	// Start gRPC-Gateway REST proxy in a separate goroutine
-	go func() {
-		log.Info("🌐 Starting gRPC-Gateway (REST proxy)...",
-			zap.String("port", cfg.HTTPPORT),
-		)
-		if err := grpcgateway.RunServerGrpcGW(context.Background(), container); err != nil {
-			log.Fatal("❌ Failed to start gRPC-Gateway", zap.Error(err))
-		}
-	}()
+	go startGRPCGateway(container, log, cfg)
 
 	// Wait for shutdown signal
 	waitForShutdown(log, container)
 }
 
-// waitForShutdown handles OS signals and performs graceful shutdown
+// startGRPCServer initializes and runs the gRPC server
+func startGRPCServer(container *di.Container, log *zap.Logger, cfg *config.App) {
+	grpcServer := grpc.NewGRPCServer(container)
+	log.Info("🚀 Starting gRPC server...", zap.String("port", cfg.GRPC_PORT))
+
+	if err := grpc.StartGRPCServer(cfg.GRPC_PORT, grpcServer); err != nil {
+		log.Fatal("❌ Failed to start gRPC server", zap.Error(err))
+	}
+}
+
+// startGRPCGateway initializes and runs the gRPC-Gateway (REST proxy)
+func startGRPCGateway(container *di.Container, log *zap.Logger, cfg *config.App) {
+	log.Info("🌐 Starting gRPC-Gateway (REST proxy)...", zap.String("port", cfg.HTTP_PORT))
+
+	if err := grpcgateway.RunServerGrpcGW(context.Background(), container); err != nil {
+		log.Fatal("❌ Failed to start gRPC-Gateway", zap.Error(err))
+	}
+}
+
+// waitForShutdown handles graceful shutdown of the application
 func waitForShutdown(log *zap.Logger, container *di.Container) {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-stop
 
-	log.Info("🛑 Shutdown signal received",
-		zap.String("signal", sig.String()),
-	)
+	log.Info("🛑 Shutdown signal received", zap.String("signal", sig.String()))
 
-	// Perform any cleanup or graceful shutdown steps
-	// Example: Gracefully shutdown gRPC server or database connections
-	// container.DB.Close() // If you need to close DB connections
+	// Perform cleanup or graceful shutdown steps
+	// Example: Gracefully shutdown gRPC server or close database connections
+	// container.DB.Close() // Uncomment if needed
 
 	// Optionally, wait for ongoing requests to finish before shutting down
 	// Timeout to wait for graceful shutdown
 	_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
-	// Shutdown server gracefully
-	// For example, if you're using an HTTP server, you could use:
-	// server.Shutdown(ctx)
 
 	log.Info("✅ Server shutdown completed")
 }

@@ -31,7 +31,7 @@ func RunServerGrpcGW(ctx context.Context, container *di.Container) error {
 		// Add other middleware here
 	)(mux)
 
-	grpcAddr := fmt.Sprintf("localhost:%s", container.Config.GRPCPORT)
+	grpcAddr := fmt.Sprintf("localhost:%s", container.Config.GRPC_PORT)
 
 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
@@ -45,7 +45,7 @@ func RunServerGrpcGW(ctx context.Context, container *di.Container) error {
 	// @auto:inject:handler
 
 	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%s", container.Config.HTTPPORT),
+		Addr:         fmt.Sprintf(":%s", container.Config.HTTP_PORT),
 		Handler:      handler,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
