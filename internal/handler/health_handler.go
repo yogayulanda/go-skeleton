@@ -15,7 +15,7 @@ func NewHealthHandler() *HealthHandler {
 	return &HealthHandler{}
 }
 
-func (h *HealthHandler) Check(ctx context.Context, _ *v1pb.HealthCheckRequest) (*v1pb.HealthCheckResponse, error) {
+func (h *HealthHandler) CheckHealth(ctx context.Context, _ *v1pb.HealthCheckRequest) (*v1pb.HealthCheckResponse, error) {
 	// Simulasi pengecekan status dependencies
 	statuses := map[string]string{
 		"db":    "OK",

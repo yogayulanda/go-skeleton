@@ -15,38 +15,38 @@ import (
 )
 
 // RunServer starts both the gRPC and HTTP servers, utilizing DI container for dependencies.
-func RunServer(container *di.Container, log *zap.Logger, cfg *config.App) {
+func RunServer(appContext *di.Container, cfg *config.App) {
 	// Start gRPC server in a separate goroutine
-	go startGRPCServer(container, log, cfg)
+	go startGRPCServer(appContext, cfg)
 
 	// Start gRPC-Gateway REST proxy in a separate goroutine
-	go startGRPCGateway(container, log, cfg)
+	go startGRPCGateway(appContext, cfg)
 
 	// Wait for shutdown signal
-	waitForShutdown(log, container)
+	waitForShutdown(appContext.Log)
 }
 
 // startGRPCServer initializes and runs the gRPC server
-func startGRPCServer(container *di.Container, log *zap.Logger, cfg *config.App) {
+func startGRPCServer(container *di.Container, cfg *config.App) {
 	grpcServer := grpc.NewGRPCServer(container)
-	log.Info("🚀 Starting gRPC server...", zap.String("port", cfg.GRPC_PORT))
+	container.Log.Info("🚀 Starting gRPC server...", zap.String("port", cfg.GRPC_PORT))
 
 	if err := grpc.StartGRPCServer(cfg.GRPC_PORT, grpcServer); err != nil {
-		log.Fatal("❌ Failed to start gRPC server", zap.Error(err))
+		container.Log.Fatal("❌ Failed to start gRPC server", zap.Error(err))
 	}
 }
 
 // startGRPCGateway initializes and runs the gRPC-Gateway (REST proxy)
-func startGRPCGateway(container *di.Container, log *zap.Logger, cfg *config.App) {
-	log.Info("🌐 Starting gRPC-Gateway (REST proxy)...", zap.String("port", cfg.HTTP_PORT))
+func startGRPCGateway(container *di.Container, cfg *config.App) {
+	container.Log.Info("🌐 Starting gRPC-Gateway (REST proxy)...", zap.String("port", cfg.HTTP_PORT))
 
 	if err := grpcgateway.RunServerGrpcGW(context.Background(), container); err != nil {
-		log.Fatal("❌ Failed to start gRPC-Gateway", zap.Error(err))
+		container.Log.Fatal("❌ Failed to start gRPC-Gateway", zap.Error(err))
 	}
 }
 
 // waitForShutdown handles graceful shutdown of the application
-func waitForShutdown(log *zap.Logger, container *di.Container) {
+func waitForShutdown(log *zap.Logger) {
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 	sig := <-stop

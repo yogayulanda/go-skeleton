@@ -36,12 +36,11 @@ var serverCMD = &cobra.Command{
 		}
 
 		// Menyiapkan DI container
-		container := di.InitContainer(cfg)
-		log := container.Log
+		var container = di.InitContainer(cfg)
 
 		// Memanggil fungsi untuk menjalankan server
-		log.Info("🚀 Starting the server...")
-		RunServer(container, log, cfg)
+		container.Log.Info("🚀 Starting the server...")
+		RunServer(container, cfg)
 	},
 }
 

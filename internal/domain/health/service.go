@@ -27,7 +27,7 @@ func NewService(redisClient *redis.Client, kafkaReader *kafka.Reader, logger *za
 }
 
 // Check implements the HealthServer interface for v1
-func (s *Service) Check(ctx context.Context, req *v1proto.HealthCheckRequest) (*v1proto.HealthCheckResponse, error) {
+func (s *Service) CheckHealth(ctx context.Context, req *v1proto.HealthCheckRequest) (*v1proto.HealthCheckResponse, error) {
 	componentStatuses := make(map[string]string)
 
 	// Check Redis health

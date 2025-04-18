@@ -30,7 +30,7 @@ type App struct {
 	MSSQL_PORT int    `env:"MSSQL_PORT" yaml:"mssql_port" validate:"required"`
 
 	// Logging Configuration
-	LOG_LEVEL       int    `env:"LOG_LEVEL" yaml:"log_level"`
+	LOG_LEVEL       string `env:"LOG_LEVEL" yaml:"log_level"`
 	LOG_TIME_FORMAT string `env:"LOG_TIME_FORMAT" yaml:"log_time_format"`
 
 	// Misc Configuration

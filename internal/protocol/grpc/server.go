@@ -9,6 +9,7 @@ import (
 	"github.com/yogayulanda/go-skeleton/internal/middleware"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
 )
 
 // NewGRPCServer creates a new gRPC server with chained interceptors
@@ -32,7 +33,8 @@ func NewGRPCServer(container *di.Container) *grpc.Server {
 	v1pb.RegisterUserServiceServer(grpcServer, container.UserHandler)
 	v1pb.RegisterTransactionHistoryServiceServer(grpcServer, container.TrxHandler)
 	v1pb.RegisterHealthServiceServer(grpcServer, container.HealthHandler)
-
+	// v1pb.RegisterHealthServiceServer(grpcServer, container.HealthHandler)
+	reflection.Register(grpcServer)
 	// @auto:inject:handler
 
 	return grpcServer

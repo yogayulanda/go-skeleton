@@ -210,30 +210,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "fullName": {
-                  "type": "string",
-                  "title": "Nama lengkap (mengganti name)"
-                },
-                "email": {
-                  "type": "string",
-                  "title": "Email pengguna"
-                },
-                "address": {
-                  "type": "string",
-                  "title": "Alamat pengguna"
-                },
-                "phoneNumber": {
-                  "type": "string",
-                  "title": "Nomor telepon pengguna"
-                },
-                "isActive": {
-                  "type": "boolean",
-                  "title": "Status aktif pengguna"
-                }
-              },
-              "title": "Definisi pesan User untuk v2 (dengan perubahan)"
+              "$ref": "#/definitions/UserServiceUpdateUserBody"
             }
           }
         ],
@@ -273,30 +250,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "fullName": {
-                  "type": "string",
-                  "title": "Nama lengkap (mengganti name)"
-                },
-                "email": {
-                  "type": "string",
-                  "title": "Email pengguna"
-                },
-                "address": {
-                  "type": "string",
-                  "title": "Alamat pengguna"
-                },
-                "phoneNumber": {
-                  "type": "string",
-                  "title": "Nomor telepon pengguna"
-                },
-                "isActive": {
-                  "type": "boolean",
-                  "title": "Status aktif pengguna"
-                }
-              },
-              "title": "Definisi pesan User untuk v2 (dengan perubahan)"
+              "$ref": "#/definitions/UserServiceDeactivateUserBody"
             }
           }
         ],
@@ -307,6 +261,58 @@
     }
   },
   "definitions": {
+    "UserServiceDeactivateUserBody": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "title": "Nama lengkap (mengganti name)"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email pengguna"
+        },
+        "address": {
+          "type": "string",
+          "title": "Alamat pengguna"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "title": "Nomor telepon pengguna"
+        },
+        "isActive": {
+          "type": "boolean",
+          "title": "Status aktif pengguna"
+        }
+      },
+      "title": "Definisi pesan User untuk v2 (dengan perubahan)"
+    },
+    "UserServiceUpdateUserBody": {
+      "type": "object",
+      "properties": {
+        "fullName": {
+          "type": "string",
+          "title": "Nama lengkap (mengganti name)"
+        },
+        "email": {
+          "type": "string",
+          "title": "Email pengguna"
+        },
+        "address": {
+          "type": "string",
+          "title": "Alamat pengguna"
+        },
+        "phoneNumber": {
+          "type": "string",
+          "title": "Nomor telepon pengguna"
+        },
+        "isActive": {
+          "type": "boolean",
+          "title": "Status aktif pengguna"
+        }
+      },
+      "title": "Definisi pesan User untuk v2 (dengan perubahan)"
+    },
     "protobufAny": {
       "type": "object",
       "properties": {

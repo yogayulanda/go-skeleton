@@ -3,8 +3,8 @@ BUF_URL = https://github.com/bufbuild/buf/releases/download/v$(BUF_VERSION)/buf-
 INSTALL_DIR = /usr/local/bin
 BUF_BIN = $(INSTALL_DIR)/buf
 
-PROTOC_GEN_GRPC_GATEWAY_VERSION = v2.18.0
-PROTOC_GEN_OPENAPIV2_VERSION = v2.18.0
+PROTOC_GEN_GRPC_GATEWAY_VERSION = v2.22.0
+PROTOC_GEN_OPENAPIV2_VERSION = v2.22.0
 
 # Direktori yang digunakan
 PROTO_DIR = proto

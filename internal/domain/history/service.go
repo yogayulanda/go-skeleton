@@ -2,6 +2,7 @@ package history
 
 import (
 	"context"
+	"fmt"
 
 	v1pb "github.com/yogayulanda/go-skeleton/gen/proto/v1"
 )
@@ -19,7 +20,7 @@ func NewTrxHistoryService(repo Repository) *TrxHistoryService {
 
 // GetTransactions fetches transactions (dummy logic for now)
 func (s *TrxHistoryService) GetTransactions(ctx context.Context, userID string) ([]*v1pb.Transaction, error) {
-	txns := []*v1pb.Transaction{
+	_ = []*v1pb.Transaction{
 		{
 			Id:          "1",
 			UserId:      userID,
@@ -27,7 +28,9 @@ func (s *TrxHistoryService) GetTransactions(ctx context.Context, userID string) 
 			Description: "Topup",
 		},
 	}
-	return txns, nil
+
+	error := fmt.Errorf("dummy error")
+	return nil, error
 }
 
 // StoreTransaction saves a transaction (dummy logic)

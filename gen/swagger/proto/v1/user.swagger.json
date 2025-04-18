@@ -140,14 +140,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "user": {
-                  "$ref": "#/definitions/v1User",
-                  "title": "Data pengguna yang akan diperbarui"
-                }
-              },
-              "title": "Request untuk memperbarui informasi pengguna"
+              "$ref": "#/definitions/UserServiceUpdateUserBody"
             }
           }
         ],
@@ -158,6 +151,16 @@
     }
   },
   "definitions": {
+    "UserServiceUpdateUserBody": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/v1User",
+          "title": "Data pengguna yang akan diperbarui"
+        }
+      },
+      "title": "Request untuk memperbarui informasi pengguna"
+    },
     "protobufAny": {
       "type": "object",
       "properties": {
