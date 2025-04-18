@@ -1,15 +1,14 @@
-package database
+package config
 
 import (
 	"fmt"
 
-	"github.com/yogayulanda/go-skeleton/internal/config"
 	"gorm.io/driver/sqlserver"
 	"gorm.io/gorm"
 )
 
 // NewSQLServerConnection membuat koneksi ke database SQL Server
-func NewSQLServerConnection(cfg *config.App) (*gorm.DB, error) {
+func NewSQLServerConnection(cfg *App) (*gorm.DB, error) {
 	// Format string DSN untuk SQL Server
 	dsn := fmt.Sprintf("sqlserver://%s:%s@%s:%d?database=%s",
 		cfg.MSSQL_USER, cfg.MSSQL_PASS, cfg.MSSQL_HOST, cfg.MSSQL_PORT, cfg.MSSQL_DB)

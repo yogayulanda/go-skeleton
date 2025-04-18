@@ -23,7 +23,7 @@ func UnaryPanicInterceptor(logger *zap.Logger) grpc.UnaryServerInterceptor {
 					zap.Any("panic", r),
 					zap.String("method", info.FullMethod),
 				)
-				err = status.Errorf(codes.Internal, "Internal server error")
+				err = status.Errorf(codes.Internal, "pkg server error")
 			}
 		}()
 		return handler(ctx, req)

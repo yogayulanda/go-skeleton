@@ -29,7 +29,7 @@
   - **`proto/v1`**: Generated gRPC and REST code for version 1 APIs.
   - **`proto/v2`**: Generated gRPC and REST code for version 2 APIs.
   - **`swagger`**: OpenAPI specifications for REST APIs.
-- **`internal`**: Core business logic and utilities.
+- **`pkg`**: Core business logic and utilities.
   - **`config`**: Application configuration management.
   - **`database`**: Database connection setup.
   - **`di`**: Dependency injection container.

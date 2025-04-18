@@ -4,8 +4,8 @@ import (
 	"context"
 
 	userProto "github.com/yogayulanda/go-skeleton/gen/proto/v1"
-	"github.com/yogayulanda/go-skeleton/internal/domain/user"
-	"github.com/yogayulanda/go-skeleton/internal/utils"
+	"github.com/yogayulanda/go-skeleton/pkg/domain/user"
+	"github.com/yogayulanda/go-skeleton/pkg/utils"
 )
 
 type UserHandler struct {
@@ -61,7 +61,7 @@ func (h *UserHandler) CreateUser(ctx context.Context, req *userProto.CreateUserR
 
 // UpdateUser untuk memperbarui informasi pengguna
 func (h *UserHandler) UpdateUser(ctx context.Context, req *userProto.UpdateUserRequest) (*userProto.UpdateUserResponse, error) {
-	// Konversi proto ke model (struktur internal)
+	// Konversi proto ke model (struktur pkg)
 	user := &user.UserModel{}
 	if err := utils.ProtoToModel(req.GetUser(), user); err != nil {
 		return nil, err

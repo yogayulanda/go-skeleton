@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"github.com/yogayulanda/go-skeleton/internal/config"
-	"github.com/yogayulanda/go-skeleton/internal/di"
+	"github.com/yogayulanda/go-skeleton/pkg/config"
+	"github.com/yogayulanda/go-skeleton/pkg/di"
 )
 
 // Root command
@@ -45,7 +45,7 @@ var serverCMD = &cobra.Command{
 }
 
 // Execute menjalankan root command dan perintah-perintah lainnya
-func Execute() {
+func 	Execute() {
 
 	// Menyiapkan konfigurasi dan container DI
 	if err := config.Init(); err != nil {

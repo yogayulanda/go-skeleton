@@ -11,9 +11,9 @@ import (
 	"time"
 
 	v1pb "github.com/yogayulanda/go-skeleton/gen/proto/v1"
-	"github.com/yogayulanda/go-skeleton/internal/di"
-	"github.com/yogayulanda/go-skeleton/internal/middleware"
-	"github.com/yogayulanda/go-skeleton/internal/utils"
+	"github.com/yogayulanda/go-skeleton/pkg/di"
+	"github.com/yogayulanda/go-skeleton/pkg/middleware"
+	"github.com/yogayulanda/go-skeleton/pkg/utils"
 	"go.uber.org/zap"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"

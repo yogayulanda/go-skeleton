@@ -3,7 +3,7 @@ package {{.EntityLower}}_test
 import (
 	"testing"
 
-	"github.com/yogayulanda/go-skeleton/internal/domain/{{.EntityLower}}"
+	"github.com/yogayulanda/go-skeleton/pkg/domain/{{.EntityLower}}"
 )
 
 func TestNew{{.Entity}}Service(t *testing.T) {

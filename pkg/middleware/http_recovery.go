@@ -19,7 +19,7 @@ func HTTPPanicRecovery(logger *zap.Logger) func(http.Handler) http.Handler {
 						zap.String("method", r.Method),
 						zap.ByteString("stack", debug.Stack()),
 					)
-					http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+					http.Error(w, "pkg Server Error", http.StatusInternalServerError)
 				}
 			}()
 			next.ServeHTTP(w, r)

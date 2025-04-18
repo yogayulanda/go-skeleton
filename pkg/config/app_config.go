@@ -84,7 +84,7 @@ func Init() error {
 	viper.AutomaticEnv()        // Automatically map environment variables
 
 	if err := viper.ReadInConfig(); err != nil {
-		return fmt.Errorf("Error reading config file: %v", err)
+		return fmt.Errorf("error reading config file: %v", err)
 	}
 	return nil
 }
@@ -95,7 +95,7 @@ func LoadConfig() (*App, error) {
 
 	// Memetakan konfigurasi dari viper ke dalam struct
 	if err := viper.Unmarshal(config); err != nil {
-		return nil, fmt.Errorf("Error unmarshalling config: %v", err)
+		return nil, fmt.Errorf("error unmarshalling config: %v", err)
 	}
 
 	// Debugging setelah Unmarshal
@@ -104,7 +104,7 @@ func LoadConfig() (*App, error) {
 	// Validasi konfigurasi
 	validate := validator.New()
 	if err := validate.Struct(config); err != nil {
-		return nil, fmt.Errorf("Validation error: %v", err)
+		return nil, fmt.Errorf("validation error: %v", err)
 	}
 	return config, nil
 }

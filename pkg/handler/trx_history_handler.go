@@ -4,7 +4,7 @@ import (
 	"context"
 
 	v1pb "github.com/yogayulanda/go-skeleton/gen/proto/v1"
-	"github.com/yogayulanda/go-skeleton/internal/domain/history"
+	"github.com/yogayulanda/go-skeleton/pkg/domain/history"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

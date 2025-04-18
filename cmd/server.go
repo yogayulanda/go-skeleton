@@ -7,10 +7,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/yogayulanda/go-skeleton/internal/config"
-	"github.com/yogayulanda/go-skeleton/internal/di"
-	grpc "github.com/yogayulanda/go-skeleton/internal/protocol/grpc"
-	grpcgateway "github.com/yogayulanda/go-skeleton/internal/protocol/grpc-gateway"
+	"github.com/yogayulanda/go-skeleton/pkg/config"
+	"github.com/yogayulanda/go-skeleton/pkg/di"
+	grpc "github.com/yogayulanda/go-skeleton/pkg/protocol/grpc"
+	grpcgateway "github.com/yogayulanda/go-skeleton/pkg/protocol/grpc-gateway"
 	"go.uber.org/zap"
 )
 

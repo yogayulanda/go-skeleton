@@ -67,8 +67,8 @@ func parseProtoFile(filePath string) (ServiceData, error) {
 	return ServiceData{
 		ServiceName: serviceName,
 		MethodName:  "MyMethod", // Anda bisa menambahkan logic untuk mengambil metode dari file .proto
-		DomainPkg:   "internal/domain",
-		HandlerPkg:  "internal/handler",
+		DomainPkg:   "pkg/domain",
+		HandlerPkg:  "pkg/handler",
 		ProtoFile:   filePath,
 	}, nil
 }

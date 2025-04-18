@@ -2,7 +2,7 @@ package handler
 
 import (
 	"context"
-	"internal/domain/{{.ServicePackage}}"
+	"pkg/domain/{{.ServicePackage}}"
 	pb "{{.ProtoImportPath}}"
 )
 

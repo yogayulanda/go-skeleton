@@ -4,8 +4,8 @@ SERVICE_NAME=$1
 CAP_NAME="$(tr '[:lower:]' '[:upper:]' <<< ${SERVICE_NAME:0:1})${SERVICE_NAME:1}"
 
 PROTO_PATH="api/proto/gen/v1/${SERVICE_NAME}.proto"
-HANDLER_PATH="internal/handler/${SERVICE_NAME}_handler.go"
-DOMAIN_PATH="internal/domain/${SERVICE_NAME}/service.go"
+HANDLER_PATH="pkg/handler/${SERVICE_NAME}_handler.go"
+DOMAIN_PATH="pkg/domain/${SERVICE_NAME}/service.go"
 
 mkdir -p $(dirname $PROTO_PATH)
 mkdir -p $(dirname $HANDLER_PATH)

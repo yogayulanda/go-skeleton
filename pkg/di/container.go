@@ -1,12 +1,11 @@
 package di
 
 import (
-	"github.com/yogayulanda/go-skeleton/internal/config"
-	"github.com/yogayulanda/go-skeleton/internal/database"
-	"github.com/yogayulanda/go-skeleton/internal/domain/history"
-	"github.com/yogayulanda/go-skeleton/internal/domain/user"
-	"github.com/yogayulanda/go-skeleton/internal/handler"
-	"github.com/yogayulanda/go-skeleton/internal/logging"
+	"github.com/yogayulanda/go-skeleton/pkg/config"
+	"github.com/yogayulanda/go-skeleton/pkg/domain/history"
+	"github.com/yogayulanda/go-skeleton/pkg/domain/user"
+	"github.com/yogayulanda/go-skeleton/pkg/handler"
+	"github.com/yogayulanda/go-skeleton/pkg/logging"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -31,7 +30,7 @@ func InitContainer(cfg *config.App) *Container {
 	defer logging.SyncLogger()
 	// Mengambil logger dari package logging
 	// Membuat koneksi ke database SQL Server menggunakan fungsi dari database/sql.go
-	db, err := database.NewSQLServerConnection(cfg)
+	db, err := config.NewSQLServerConnection(cfg)
 	if err != nil {
 		logging.Log.Fatal("failed to connect to database", zap.Error(err))
 	}
