@@ -7,6 +7,9 @@
   "tags": [
     {
       "name": "UserService"
+    },
+    {
+      "name": "HealthCheckService"
     }
   ],
   "consumes": [
@@ -16,6 +19,29 @@
     "application/json"
   ],
   "paths": {
+    "/v1/healthcheck": {
+      "get": {
+        "summary": "RPC untuk memeriksa status kesehatan aplikasi",
+        "operationId": "HealthCheckService_CheckHealth",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1HealthCheckResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "HealthCheckService"
+        ]
+      }
+    },
     "/v1/users": {
       "post": {
         "summary": "RPC untuk membuat pengguna baru",
@@ -229,6 +255,27 @@
       },
       "title": "Response untuk mendapatkan informasi pengguna"
     },
+    "v1HealthCheckResponse": {
+      "type": "object",
+      "properties": {
+        "dbStatus": {
+          "type": "string",
+          "title": "Status kesehatan database"
+        },
+        "kafkaStatus": {
+          "type": "string",
+          "title": "Status kesehatan Kafka"
+        },
+        "status": {
+          "type": "string",
+          "title": "Status keseluruhan aplikasi"
+        },
+        "message": {
+          "type": "string",
+          "title": "Pesan terkait status (misalnya \"ok\", \"failed\")"
+        }
+      }
+    },
     "v1UpdateUserResponse": {
       "type": "object",
       "properties": {
@@ -244,7 +291,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "title": "ID pengguna"
+          "title": "ID pengguna (gunakan string untuk UUID atau jenis ID lain)"
         },
         "name": {
           "type": "string",

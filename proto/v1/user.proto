@@ -1,89 +1,108 @@
-    syntax = "proto3";
+syntax = "proto3";
 
-    package user.v1;
+package user.v1;
 
-    import "google/api/annotations.proto";  // Import untuk gRPC-Gateway
+import "google/api/annotations.proto";  // Import untuk gRPC-Gateway
 
-    option go_package = "github.com/yogayulanda/go-skeleton/gen/proto/v1";  // Path import untuk v1
+option go_package = "github.com/yogayulanda/go-skeleton/gen/proto/v1";  // Path import untuk v1
 
-    // Definisi pesan User
-    message User {
-        string id = 1;           // ID pengguna
-        string name = 2;         // Nama pengguna
-        string email = 3;        // Email pengguna
+// Definisi pesan User
+message User {
+    string id = 1;           // ID pengguna (gunakan string untuk UUID atau jenis ID lain)
+    string name = 2;         // Nama pengguna
+    string email = 3;        // Email pengguna
+}
+
+// Request untuk mendapatkan informasi pengguna
+message GetUserRequest {
+    string id = 1;           // ID pengguna
+}
+
+// Response untuk mendapatkan informasi pengguna
+message GetUserResponse {
+    User user = 1;           // Data pengguna
+}
+
+// Request untuk membuat pengguna baru
+message CreateUserRequest {
+    User user = 1;           // Data pengguna
+}
+
+// Response untuk membuat pengguna baru
+message CreateUserResponse {
+    User user = 1;           // Data pengguna
+}
+
+// Request untuk memperbarui informasi pengguna
+message UpdateUserRequest {
+    string id = 1;           // ID pengguna yang akan diperbarui
+    User user = 2;           // Data pengguna yang akan diperbarui
+}
+
+// Response untuk memperbarui informasi pengguna
+message UpdateUserResponse {
+    User user = 1;           // Data pengguna yang sudah diperbarui
+}
+
+// Request untuk menghapus pengguna
+message DeleteUserRequest {
+    string id = 1;           // ID pengguna yang ingin dihapus
+}
+
+// Response untuk menghapus pengguna
+message DeleteUserResponse {
+    bool success = 1;        // Status penghapusan
+}
+
+// HealthCheck Service untuk memeriksa status aplikasi
+message HealthCheckRequest {}
+
+message HealthCheckResponse {
+    string dbStatus = 1;      // Status kesehatan database
+    string kafkaStatus = 2;   // Status kesehatan Kafka
+    string status = 3;        // Status keseluruhan aplikasi
+    string message = 4;       // Pesan terkait status (misalnya "ok", "failed")
+}
+
+// Service untuk menangani pengguna
+service UserService {
+    // RPC untuk mendapatkan informasi pengguna
+    rpc GetUser (GetUserRequest) returns (GetUserResponse) {
+        option (google.api.http) = {
+            get: "/v1/users/{id}"  // HTTP GET dengan parameter id
+        };
     }
-
-    // Request untuk mendapatkan informasi pengguna
-    message GetUserRequest {
-        string id = 1;           // ID pengguna
+    
+    // RPC untuk membuat pengguna baru
+    rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
+        option (google.api.http) = {
+            post: "/v1/users"
+            body: "*"
+        };
     }
-
-    // Response untuk mendapatkan informasi pengguna
-    message GetUserResponse {
-        User user = 1;           // Data pengguna
+    
+    // RPC untuk memperbarui informasi pengguna
+    rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {
+        option (google.api.http) = {
+            put: "/v1/users/{id}"
+            body: "*"
+        };
     }
-
-    // Request untuk membuat pengguna baru
-    message CreateUserRequest {
-        User user = 1;           // Data pengguna
+    
+    // RPC untuk menghapus pengguna
+    rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse) {
+        option (google.api.http) = {
+            delete: "/v1/users/{id}"
+        };
     }
+}
 
-    // Response untuk membuat pengguna baru
-    message CreateUserResponse {
-        User user = 1;           // Data pengguna
+// Service untuk HealthCheck
+service HealthCheckService {
+    // RPC untuk memeriksa status kesehatan aplikasi
+    rpc CheckHealth (HealthCheckRequest) returns (HealthCheckResponse) {
+        option (google.api.http) = {
+            get: "/v1/healthcheck"
+        };
     }
-
-    // Request untuk memperbarui informasi pengguna
-    message UpdateUserRequest {
-        string id = 1;           // ID pengguna yang akan diperbarui
-        User user = 2;           // Data pengguna yang akan diperbarui
-    }
-
-    // Response untuk memperbarui informasi pengguna
-    message UpdateUserResponse {
-        User user = 1;           // Data pengguna yang sudah diperbarui
-    }
-
-
-    // Request untuk menghapus pengguna
-    message DeleteUserRequest {
-        string id = 1;           // ID pengguna yang ingin dihapus
-    }
-
-    // Response untuk menghapus pengguna
-    message DeleteUserResponse {
-        bool success = 1;        // Status penghapusan
-    }
-
-    // Service untuk menangani pengguna
-    service UserService {
-        // RPC untuk mendapatkan informasi pengguna
-        rpc GetUser (GetUserRequest) returns (GetUserResponse) {
-            option (google.api.http) = {
-                get: "/v1/users/{id}"  // HTTP GET dengan parameter id
-            };
-        }
-        
-        // RPC untuk membuat pengguna baru
-        rpc CreateUser (CreateUserRequest) returns (CreateUserResponse) {
-            option (google.api.http) = {
-                post: "/v1/users"
-                body: "*"
-            };
-        }
-        
-        // RPC untuk memperbarui informasi pengguna
-        rpc UpdateUser (UpdateUserRequest) returns (UpdateUserResponse) {
-            option (google.api.http) = {
-                put: "/v1/users/{id}"
-                body: "*"
-            };
-        }
-        
-        // RPC untuk menghapus pengguna
-        rpc DeleteUser (DeleteUserRequest) returns (DeleteUserResponse) {
-            option (google.api.http) = {
-                delete: "/v1/users/{id}"
-            };
-        }
-    }
+}

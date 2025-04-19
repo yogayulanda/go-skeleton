@@ -2,7 +2,6 @@ package config
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/spf13/viper"
 	"gopkg.in/go-playground/validator.v9"
@@ -97,9 +96,6 @@ func LoadConfig() (*App, error) {
 	if err := viper.Unmarshal(config); err != nil {
 		return nil, fmt.Errorf("error unmarshalling config: %v", err)
 	}
-
-	// Debugging setelah Unmarshal
-	log.Println("After UnmarshalLoadconfig, SERVER_HOST:", config.SERVER_HOST)
 
 	// Validasi konfigurasi
 	validate := validator.New()

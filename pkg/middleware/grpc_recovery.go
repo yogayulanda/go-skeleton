@@ -10,7 +10,7 @@ import (
 )
 
 // UnaryPanicInterceptor returns a unary server interceptor that recovers from panics.
-func UnaryPanicInterceptor(logger *zap.Logger) grpc.UnaryServerInterceptor {
+func RecoveryInterceptor(logger *zap.Logger) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req interface{},

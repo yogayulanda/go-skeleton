@@ -6,9 +6,6 @@
   },
   "tags": [
     {
-      "name": "HealthService"
-    },
-    {
       "name": "TransactionHistoryService"
     }
   ],
@@ -19,29 +16,6 @@
     "application/json"
   ],
   "paths": {
-    "/v1/health": {
-      "get": {
-        "summary": "Check the health status of the service and its dependencies",
-        "operationId": "HealthService_CheckHealth",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/v1HealthCheckResponse"
-            }
-          },
-          "default": {
-            "description": "An unexpected error response.",
-            "schema": {
-              "$ref": "#/definitions/rpcStatus"
-            }
-          }
-        },
-        "tags": [
-          "HealthService"
-        ]
-      }
-    },
     "/v1/transactions": {
       "get": {
         "summary": "Get a list of transactions for a user",
@@ -173,23 +147,6 @@
         }
       },
       "title": "Response message containing a list of transactions"
-    },
-    "v1HealthCheckResponse": {
-      "type": "object",
-      "properties": {
-        "healthStatus": {
-          "type": "string",
-          "title": "e.g., \"SERVING\", \"NOT_SERVING\""
-        },
-        "componentStatuses": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          },
-          "title": "e.g., { \"db\": \"OK\", \"kafka\": \"FAIL\", \"redis\": \"OK\" }"
-        }
-      },
-      "title": "Response message for health check"
     },
     "v1Transaction": {
       "type": "object",

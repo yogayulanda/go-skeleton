@@ -3,9 +3,7 @@ package middleware
 import (
 	"context"
 	"net/http"
-	"strings"
 
-	"github.com/google/uuid"
 	"google.golang.org/grpc"
 )
 
@@ -20,37 +18,37 @@ func ChainMiddleware(middlewares ...Middleware) Middleware {
 	}
 }
 
-func GetUserIP(r *http.Request) (ip string, host string) {
-	host = r.Host
+// func GetUserIP(r *http.Request) (ip string, host string) {
+// 	host = r.Host
 
-	// Urutan prioritas IP (dari paling dipercaya)
-	if ip = r.Header.Get("CF-Connecting-IP"); ip != "" {
-		return ip, host
-	}
-	if ip = r.Header.Get("X-Forwarded-For"); ip != "" {
-		// X-Forwarded-For bisa berisi beberapa IP, ambil IP pertama
-		ips := strings.Split(ip, ",")
-		return strings.TrimSpace(ips[0]), host
-	}
-	if ip = r.Header.Get("X-Real-IP"); ip != "" {
-		return ip, host
-	}
+// 	// Urutan prioritas IP (dari paling dipercaya)
+// 	if ip = r.Header.Get("CF-Connecting-IP"); ip != "" {
+// 		return ip, host
+// 	}
+// 	if ip = r.Header.Get("X-Forwarded-For"); ip != "" {
+// 		// X-Forwarded-For bisa berisi beberapa IP, ambil IP pertama
+// 		ips := strings.Split(ip, ",")
+// 		return strings.TrimSpace(ips[0]), host
+// 	}
+// 	if ip = r.Header.Get("X-Real-IP"); ip != "" {
+// 		return ip, host
+// 	}
 
-	// Fallback ke RemoteAddr
-	ip = r.RemoteAddr
-	if strings.Contains(ip, ":") {
-		ip = strings.Split(ip, ":")[0]
-	}
-	return ip, host
-}
+// 	// Fallback ke RemoteAddr
+// 	ip = r.RemoteAddr
+// 	if strings.Contains(ip, ":") {
+// 		ip = strings.Split(ip, ":")[0]
+// 	}
+// 	return ip, host
+// }
 
-func GetReqID(r *http.Request) string {
-	reqID := r.Header.Get("X-Request-ID")
-	if reqID == "" {
-		reqID = uuid.New().String()
-	}
-	return reqID
-}
+// func GetReqID(r *http.Request) string {
+// 	reqID := r.Header.Get("X-Request-ID")
+// 	if reqID == "" {
+// 		reqID = uuid.New().String()
+// 	}
+// 	return reqID
+// }
 
 // Chain of Unary Interceptors manually
 func ChainUnaryServer(interceptors ...grpc.UnaryServerInterceptor) grpc.UnaryServerInterceptor {

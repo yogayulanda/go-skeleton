@@ -2,96 +2,125 @@ package handler
 
 import (
 	"context"
+	"fmt"
 
-	userProto "github.com/yogayulanda/go-skeleton/gen/proto/v1"
-	"github.com/yogayulanda/go-skeleton/pkg/domain/user"
-	"github.com/yogayulanda/go-skeleton/pkg/utils"
+	v1 "github.com/yogayulanda/go-skeleton/gen/proto/v1"
+	"github.com/yogayulanda/go-skeleton/pkg/dto" // Menggunakan dto.UserDTO
+	"github.com/yogayulanda/go-skeleton/pkg/service"
+	"go.uber.org/zap"
 )
 
+// UserHandler mengimplementasikan gRPC UserServiceServer
 type UserHandler struct {
-	userProto.UnimplementedUserServiceServer // embed gRPC compatibility
-	userService                              *user.Service
+	v1.UnimplementedUserServiceServer                      // Embedkan UnimplementedUserServiceServer untuk kompatibilitas gRPC
+	userService                       *service.UserService // Gunakan pointer ke UserService
+	log                               *zap.Logger
 }
 
-func NewUserHandler(userService *user.Service) *UserHandler {
-	return &UserHandler{userService: userService}
+func NewUserHandler(userService *service.UserService, log *zap.Logger) *UserHandler { // Menerima pointer
+	return &UserHandler{
+		userService: userService,
+		log:         log,
+	}
 }
 
-// GetUser untuk mengambil pengguna berdasarkan ID
-func (h *UserHandler) GetUser(ctx context.Context, req *userProto.GetUserRequest) (*userProto.GetUserResponse, error) {
-	// Memanggil service untuk mengambil user berdasarkan ID
-	user, err := h.userService.GetUser(ctx, req.GetId())
+// GetUser menangani permintaan untuk mendapatkan informasi user
+func (h *UserHandler) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.GetUserResponse, error) {
+	h.log.Info("Handling GetUser request", zap.String("id", req.GetId()))
+
+	// Memanggil UserService untuk mendapatkan user berdasarkan ID
+	userDTO, err := h.userService.GetUser(ctx, req.GetId())
 	if err != nil {
+		h.log.Error("Error fetching user", zap.String("id", req.GetId()), zap.Error(err))
 		return nil, err
 	}
-	// Mengonversi model user ke proto User
-	return &userProto.GetUserResponse{
-		User: &userProto.User{
-			Id:    user.ID,
-			Name:  user.Name,
-			Email: user.Email,
+
+	// Mengonversi ID yang bertipe uint ke string
+	userID := fmt.Sprintf("%d", userDTO.ID)
+
+	// Mengembalikan response yang sesuai dengan struktur GetUserResponse
+	return &v1.GetUserResponse{
+		User: &v1.User{
+			Id:    userID, // Menggunakan userID yang sudah di-convert ke string
+			Name:  userDTO.Name,
+			Email: userDTO.Email,
 		},
 	}, nil
 }
 
-// CreateUser untuk membuat pengguna baru
-func (h *UserHandler) CreateUser(ctx context.Context, req *userProto.CreateUserRequest) (*userProto.CreateUserResponse, error) {
-	// Mengambil user dari request dan memetakan ke model User
-	user := &user.UserModel{
-		ID:    req.GetUser().GetId(),
+// CreateUser menangani permintaan untuk membuat user baru
+func (h *UserHandler) CreateUser(ctx context.Context, req *v1.CreateUserRequest) (*v1.CreateUserResponse, error) {
+	h.log.Info("Handling CreateUser request", zap.String("user", req.GetUser().GetName()))
+
+	// Mengonversi v1.User dari request gRPC menjadi dto.UserDTO
+	userDTO := &dto.UserDTO{
 		Name:  req.GetUser().GetName(),
 		Email: req.GetUser().GetEmail(),
 	}
 
-	// Panggil service untuk membuat user
-	createdUser, err := h.userService.CreateUser(ctx, user)
+	// Memanggil UserService untuk membuat user baru
+	createdUserDTO, err := h.userService.CreateUser(ctx, userDTO)
 	if err != nil {
+		h.log.Error("Error creating user", zap.String("user", req.GetUser().GetName()), zap.Error(err))
 		return nil, err
 	}
 
-	// Mengubah model user ke format proto
-	responseProto := &userProto.CreateUserResponse{}
-	if err := utils.ModelToProto(createdUser, responseProto); err != nil {
-		return nil, err
-	}
+	// Mengonversi ID yang bertipe uint ke string
+	userID := fmt.Sprintf("%d", createdUserDTO.ID)
 
-	// Mengembalikan response setelah sukses membuat user
-	return responseProto, nil
+	// Mengembalikan response yang sesuai
+	return &v1.CreateUserResponse{
+		User: &v1.User{
+			Id:    userID, // Menggunakan userID yang sudah di-convert ke string
+			Name:  createdUserDTO.Name,
+			Email: createdUserDTO.Email,
+		},
+	}, nil
 }
 
-// UpdateUser untuk memperbarui informasi pengguna
-func (h *UserHandler) UpdateUser(ctx context.Context, req *userProto.UpdateUserRequest) (*userProto.UpdateUserResponse, error) {
-	// Konversi proto ke model (struktur pkg)
-	user := &user.UserModel{}
-	if err := utils.ProtoToModel(req.GetUser(), user); err != nil {
-		return nil, err
+// UpdateUser menangani permintaan untuk memperbarui informasi user
+func (h *UserHandler) UpdateUser(ctx context.Context, req *v1.UpdateUserRequest) (*v1.UpdateUserResponse, error) {
+	h.log.Info("Handling UpdateUser request", zap.String("id", req.GetId()))
+
+	// Mengonversi v1.User dari request gRPC menjadi dto.UserDTO
+	userDTO := &dto.UserDTO{
+		Name:  req.GetUser().GetName(),
+		Email: req.GetUser().GetEmail(),
 	}
 
-	// Panggil service untuk memperbarui user
-	updatedUser, err := h.userService.UpdateUser(ctx, user)
+	// Memanggil UserService untuk memperbarui user
+	updatedUserDTO, err := h.userService.UpdateUser(ctx, req.GetId(), userDTO)
 	if err != nil {
+		h.log.Error("Error updating user", zap.String("id", req.GetId()), zap.Error(err))
 		return nil, err
 	}
 
-	// Konversi model kembali ke proto untuk respons
-	responseProto := &userProto.UpdateUserResponse{}
-	if err := utils.ModelToProto(updatedUser, responseProto); err != nil {
-		return nil, err
-	}
+	// Mengonversi ID yang bertipe uint ke string
+	userID := fmt.Sprintf("%d", updatedUserDTO.ID)
 
-	return responseProto, nil
+	// Mengembalikan response yang sesuai
+	return &v1.UpdateUserResponse{
+		User: &v1.User{
+			Id:    userID, // Menggunakan userID yang sudah di-convert ke string
+			Name:  updatedUserDTO.Name,
+			Email: updatedUserDTO.Email,
+		},
+	}, nil
 }
 
-// DeleteUser untuk menghapus pengguna berdasarkan ID
-func (h *UserHandler) DeleteUser(ctx context.Context, req *userProto.DeleteUserRequest) (*userProto.DeleteUserResponse, error) {
-	// Panggil service untuk menghapus user
-	success, err := h.userService.DeleteUser(ctx, req.GetId())
+// DeleteUser menangani permintaan untuk menghapus user
+func (h *UserHandler) DeleteUser(ctx context.Context, req *v1.DeleteUserRequest) (*v1.DeleteUserResponse, error) {
+	h.log.Info("Handling DeleteUser request", zap.String("id", req.GetId()))
+
+	// Memanggil UserService untuk menghapus user berdasarkan ID
+	err := h.userService.DeleteUser(ctx, req.GetId())
 	if err != nil {
+		h.log.Error("Error deleting user", zap.String("id", req.GetId()), zap.Error(err))
 		return nil, err
 	}
 
-	// Mengembalikan response setelah menghapus user
-	return &userProto.DeleteUserResponse{
-		Success: success,
+	// Mengembalikan response yang sesuai
+	return &v1.DeleteUserResponse{
+		Success: true, // Mengindikasikan bahwa penghapusan berhasil
 	}, nil
 }

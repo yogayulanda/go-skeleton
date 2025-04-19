@@ -23,96 +23,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for health check
-type HealthCheckRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *HealthCheckRequest) Reset() {
-	*x = HealthCheckRequest{}
-	mi := &file_proto_v1_trx_history_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *HealthCheckRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*HealthCheckRequest) ProtoMessage() {}
-
-func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_trx_history_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use HealthCheckRequest.ProtoReflect.Descriptor instead.
-func (*HealthCheckRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{0}
-}
-
-// Response message for health check
-type HealthCheckResponse struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	HealthStatus      string                 `protobuf:"bytes,1,opt,name=health_status,json=healthStatus,proto3" json:"health_status,omitempty"`                                                                                          // e.g., "SERVING", "NOT_SERVING"
-	ComponentStatuses map[string]string      `protobuf:"bytes,2,rep,name=component_statuses,json=componentStatuses,proto3" json:"component_statuses,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // e.g., { "db": "OK", "kafka": "FAIL", "redis": "OK" }
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
-}
-
-func (x *HealthCheckResponse) Reset() {
-	*x = HealthCheckResponse{}
-	mi := &file_proto_v1_trx_history_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *HealthCheckResponse) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*HealthCheckResponse) ProtoMessage() {}
-
-func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_trx_history_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use HealthCheckResponse.ProtoReflect.Descriptor instead.
-func (*HealthCheckResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *HealthCheckResponse) GetHealthStatus() string {
-	if x != nil {
-		return x.HealthStatus
-	}
-	return ""
-}
-
-func (x *HealthCheckResponse) GetComponentStatuses() map[string]string {
-	if x != nil {
-		return x.ComponentStatuses
-	}
-	return nil
-}
-
 // Request message for fetching transactions
 type GetTransactionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -124,7 +34,7 @@ type GetTransactionsRequest struct {
 
 func (x *GetTransactionsRequest) Reset() {
 	*x = GetTransactionsRequest{}
-	mi := &file_proto_v1_trx_history_proto_msgTypes[2]
+	mi := &file_proto_v1_trx_history_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -136,7 +46,7 @@ func (x *GetTransactionsRequest) String() string {
 func (*GetTransactionsRequest) ProtoMessage() {}
 
 func (x *GetTransactionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_trx_history_proto_msgTypes[2]
+	mi := &file_proto_v1_trx_history_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -149,7 +59,7 @@ func (x *GetTransactionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTransactionsRequest.ProtoReflect.Descriptor instead.
 func (*GetTransactionsRequest) Descriptor() ([]byte, []int) {
-	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{2}
+	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *GetTransactionsRequest) GetUserId() string {
@@ -177,7 +87,7 @@ type GetTransactionsResponse struct {
 
 func (x *GetTransactionsResponse) Reset() {
 	*x = GetTransactionsResponse{}
-	mi := &file_proto_v1_trx_history_proto_msgTypes[3]
+	mi := &file_proto_v1_trx_history_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -189,7 +99,7 @@ func (x *GetTransactionsResponse) String() string {
 func (*GetTransactionsResponse) ProtoMessage() {}
 
 func (x *GetTransactionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_trx_history_proto_msgTypes[3]
+	mi := &file_proto_v1_trx_history_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -202,7 +112,7 @@ func (x *GetTransactionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetTransactionsResponse.ProtoReflect.Descriptor instead.
 func (*GetTransactionsResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{3}
+	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *GetTransactionsResponse) GetTransactions() []*Transaction {
@@ -234,7 +144,7 @@ type Transaction struct {
 
 func (x *Transaction) Reset() {
 	*x = Transaction{}
-	mi := &file_proto_v1_trx_history_proto_msgTypes[4]
+	mi := &file_proto_v1_trx_history_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -246,7 +156,7 @@ func (x *Transaction) String() string {
 func (*Transaction) ProtoMessage() {}
 
 func (x *Transaction) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_trx_history_proto_msgTypes[4]
+	mi := &file_proto_v1_trx_history_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -259,7 +169,7 @@ func (x *Transaction) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transaction.ProtoReflect.Descriptor instead.
 func (*Transaction) Descriptor() ([]byte, []int) {
-	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{4}
+	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *Transaction) GetId() string {
@@ -315,7 +225,7 @@ type CreateTransactionResponse struct {
 
 func (x *CreateTransactionResponse) Reset() {
 	*x = CreateTransactionResponse{}
-	mi := &file_proto_v1_trx_history_proto_msgTypes[5]
+	mi := &file_proto_v1_trx_history_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -327,7 +237,7 @@ func (x *CreateTransactionResponse) String() string {
 func (*CreateTransactionResponse) ProtoMessage() {}
 
 func (x *CreateTransactionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_v1_trx_history_proto_msgTypes[5]
+	mi := &file_proto_v1_trx_history_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -340,7 +250,7 @@ func (x *CreateTransactionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateTransactionResponse.ProtoReflect.Descriptor instead.
 func (*CreateTransactionResponse) Descriptor() ([]byte, []int) {
-	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{5}
+	return file_proto_v1_trx_history_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateTransactionResponse) GetStatusMessage() string {
@@ -361,14 +271,7 @@ var File_proto_v1_trx_history_proto protoreflect.FileDescriptor
 
 const file_proto_v1_trx_history_proto_rawDesc = "" +
 	"\n" +
-	"\x1aproto/v1/trx-history.proto\x12\bproto.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"\x14\n" +
-	"\x12HealthCheckRequest\"\xe5\x01\n" +
-	"\x13HealthCheckResponse\x12#\n" +
-	"\rhealth_status\x18\x01 \x01(\tR\fhealthStatus\x12c\n" +
-	"\x12component_statuses\x18\x02 \x03(\v24.proto.v1.HealthCheckResponse.ComponentStatusesEntryR\x11componentStatuses\x1aD\n" +
-	"\x16ComponentStatusesEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"P\n" +
+	"\x1aproto/v1/trx-history.proto\x12\bproto.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"P\n" +
 	"\x16GetTransactionsRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
@@ -385,10 +288,7 @@ const file_proto_v1_trx_history_proto_rawDesc = "" +
 	"\x06status\x18\x06 \x01(\tR\x06status\"i\n" +
 	"\x19CreateTransactionResponse\x12%\n" +
 	"\x0estatus_message\x18\x01 \x01(\tR\rstatusMessage\x12%\n" +
-	"\x0etransaction_id\x18\x02 \x01(\tR\rtransactionId2o\n" +
-	"\rHealthService\x12^\n" +
-	"\vCheckHealth\x12\x1c.proto.v1.HealthCheckRequest\x1a\x1d.proto.v1.HealthCheckResponse\"\x12\x82\xd3\xe4\x93\x02\f\x12\n" +
-	"/v1/health2\xfb\x01\n" +
+	"\x0etransaction_id\x18\x02 \x01(\tR\rtransactionId2\xfb\x01\n" +
 	"\x19TransactionHistoryService\x12p\n" +
 	"\x0fGetTransactions\x12 .proto.v1.GetTransactionsRequest\x1a!.proto.v1.GetTransactionsResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/v1/transactions\x12l\n" +
 	"\x11CreateTransaction\x12\x15.proto.v1.Transaction\x1a#.proto.v1.CreateTransactionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/v1/transactionsB8Z6github.com/yogayulanda/go-skeleton/api/proto/gen/v1;v1b\x06proto3"
@@ -405,32 +305,26 @@ func file_proto_v1_trx_history_proto_rawDescGZIP() []byte {
 	return file_proto_v1_trx_history_proto_rawDescData
 }
 
-var file_proto_v1_trx_history_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_proto_v1_trx_history_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_v1_trx_history_proto_goTypes = []any{
-	(*HealthCheckRequest)(nil),        // 0: proto.v1.HealthCheckRequest
-	(*HealthCheckResponse)(nil),       // 1: proto.v1.HealthCheckResponse
-	(*GetTransactionsRequest)(nil),    // 2: proto.v1.GetTransactionsRequest
-	(*GetTransactionsResponse)(nil),   // 3: proto.v1.GetTransactionsResponse
-	(*Transaction)(nil),               // 4: proto.v1.Transaction
-	(*CreateTransactionResponse)(nil), // 5: proto.v1.CreateTransactionResponse
-	nil,                               // 6: proto.v1.HealthCheckResponse.ComponentStatusesEntry
-	(*timestamppb.Timestamp)(nil),     // 7: google.protobuf.Timestamp
+	(*GetTransactionsRequest)(nil),    // 0: proto.v1.GetTransactionsRequest
+	(*GetTransactionsResponse)(nil),   // 1: proto.v1.GetTransactionsResponse
+	(*Transaction)(nil),               // 2: proto.v1.Transaction
+	(*CreateTransactionResponse)(nil), // 3: proto.v1.CreateTransactionResponse
+	(*timestamppb.Timestamp)(nil),     // 4: google.protobuf.Timestamp
 }
 var file_proto_v1_trx_history_proto_depIdxs = []int32{
-	6, // 0: proto.v1.HealthCheckResponse.component_statuses:type_name -> proto.v1.HealthCheckResponse.ComponentStatusesEntry
-	4, // 1: proto.v1.GetTransactionsResponse.transactions:type_name -> proto.v1.Transaction
-	7, // 2: proto.v1.Transaction.timestamp:type_name -> google.protobuf.Timestamp
-	0, // 3: proto.v1.HealthService.CheckHealth:input_type -> proto.v1.HealthCheckRequest
-	2, // 4: proto.v1.TransactionHistoryService.GetTransactions:input_type -> proto.v1.GetTransactionsRequest
-	4, // 5: proto.v1.TransactionHistoryService.CreateTransaction:input_type -> proto.v1.Transaction
-	1, // 6: proto.v1.HealthService.CheckHealth:output_type -> proto.v1.HealthCheckResponse
-	3, // 7: proto.v1.TransactionHistoryService.GetTransactions:output_type -> proto.v1.GetTransactionsResponse
-	5, // 8: proto.v1.TransactionHistoryService.CreateTransaction:output_type -> proto.v1.CreateTransactionResponse
-	6, // [6:9] is the sub-list for method output_type
-	3, // [3:6] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	2, // 0: proto.v1.GetTransactionsResponse.transactions:type_name -> proto.v1.Transaction
+	4, // 1: proto.v1.Transaction.timestamp:type_name -> google.protobuf.Timestamp
+	0, // 2: proto.v1.TransactionHistoryService.GetTransactions:input_type -> proto.v1.GetTransactionsRequest
+	2, // 3: proto.v1.TransactionHistoryService.CreateTransaction:input_type -> proto.v1.Transaction
+	1, // 4: proto.v1.TransactionHistoryService.GetTransactions:output_type -> proto.v1.GetTransactionsResponse
+	3, // 5: proto.v1.TransactionHistoryService.CreateTransaction:output_type -> proto.v1.CreateTransactionResponse
+	4, // [4:6] is the sub-list for method output_type
+	2, // [2:4] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_proto_v1_trx_history_proto_init() }
@@ -444,9 +338,9 @@ func file_proto_v1_trx_history_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_v1_trx_history_proto_rawDesc), len(file_proto_v1_trx_history_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   4,
 			NumExtensions: 0,
-			NumServices:   2,
+			NumServices:   1,
 		},
 		GoTypes:           file_proto_v1_trx_history_proto_goTypes,
 		DependencyIndexes: file_proto_v1_trx_history_proto_depIdxs,

@@ -14,7 +14,8 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-func UnaryLoggingInterceptor(logger *zap.Logger) grpc.UnaryServerInterceptor {
+// LogUnaryInterceptor adalah unary interceptor untuk logging setiap request yang masuk
+func LogUnaryInterceptor(logger *zap.Logger) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
 		req interface{},
@@ -106,44 +107,6 @@ func getOrGenerateTraceID(ctx context.Context) string {
 	return uuid.New().String()
 }
 
-func StreamLoggingInterceptor(logger *zap.Logger) grpc.StreamServerInterceptor {
-	return func(
-		srv interface{},
-		ss grpc.ServerStream,
-		info *grpc.StreamServerInfo,
-		handler grpc.StreamHandler,
-	) error {
-
-		start := time.Now()
-
-		// Generate or retrieve Trace ID from metadata
-		traceID := getOrGenerateTraceID(ss.Context())
-
-		// Log the incoming request
-		logger.Info("📡 gRPC Stream Request",
-			zap.String("method", info.FullMethod),
-			zap.String("trace_id", traceID),
-			zap.Bool("is_client_stream", info.IsClientStream),
-			zap.Bool("is_server_stream", info.IsServerStream),
-		)
-
-		err := handler(srv, ss)
-		code := status.Code(err)
-
-		// Log the response details
-		logger.Info("📡 gRPC Stream Response",
-			zap.String("method", info.FullMethod),
-			zap.String("trace_id", traceID),
-			zap.Duration("duration", time.Since(start)),
-			zap.String("status_code", code.String()),
-			zap.Error(err),
-		)
-
-		return err
-	}
-}
-
-// logErrorIfNecessary logs the error details only if the error is present
 // logErrorIfNecessary logs the error details only if the error is present
 // and it ensures that error stack trace is not included for 'Unimplemented' errors.
 func logErrorIfNecessary(logger *zap.Logger, err error, method, traceID string, code codes.Code) {

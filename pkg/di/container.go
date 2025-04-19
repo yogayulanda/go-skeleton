@@ -2,10 +2,10 @@ package di
 
 import (
 	"github.com/yogayulanda/go-skeleton/pkg/config"
-	"github.com/yogayulanda/go-skeleton/pkg/domain/history"
-	"github.com/yogayulanda/go-skeleton/pkg/domain/user"
-	"github.com/yogayulanda/go-skeleton/pkg/handler"
-	"github.com/yogayulanda/go-skeleton/pkg/logging"
+	logging "github.com/yogayulanda/go-skeleton/pkg/logger"
+	"github.com/yogayulanda/go-skeleton/pkg/repository"
+	"github.com/yogayulanda/go-skeleton/pkg/service"
+
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -14,50 +14,37 @@ import (
 var container *Container
 
 type Container struct {
-	Config        *config.App
-	Log           *zap.Logger
-	TrxHandler    *handler.TrxHistoryHandler
-	HealthHandler *handler.HealthHandler
-	UserHandler   *handler.UserHandler
-	UserService   *user.Service
-	TrxService    *history.TrxHistoryService
-	DB            *gorm.DB // Koneksi database SQL Server
+	Config             *config.App
+	Log                *zap.Logger
+	DB                 *gorm.DB // Koneksi database SQL Server
+	HealthCheckService *service.HealthCheckService
+	UserService        *service.UserService
 }
 
 func InitContainer(cfg *config.App) *Container {
 	// Inisialisasi logger
 	logging.InitLogger(cfg.LOG_LEVEL)
-	defer logging.SyncLogger()
+	log := logging.Log
 	// Mengambil logger dari package logging
 	// Membuat koneksi ke database SQL Server menggunakan fungsi dari database/sql.go
-	db, err := config.NewSQLServerConnection(cfg)
+	db, err := config.InitDB(cfg)
 	if err != nil {
-		logging.Log.Fatal("failed to connect to database", zap.Error(err))
+		log.Fatal("failed to connect to database", zap.Error(err))
 	}
 
 	// init Repository dan Service
-	userRepo := user.NewSQLRepository(db)
-	userService := user.NewService(userRepo)
+	healthCheckService := service.NewHealthCheckService(db, log)
 
-	trxHistoryRepo := history.NewSQLRepository(db)
-	trxHistoryService := history.NewTrxHistoryService(trxHistoryRepo)
-
-	// Handler
-	userHandler := handler.NewUserHandler(userService)
-	trxHistoryHandler := handler.NewTrxHistoryHandler(trxHistoryService)
-	healthHandler := handler.NewHealthHandler()
+	userRepo := repository.NewUserRepository(db, log)
+	userService := service.NewUserService(userRepo, log)
 
 	container = &Container{
-		Config:        cfg,
-		Log:           logging.Log,
-		TrxHandler:    trxHistoryHandler,
-		HealthHandler: healthHandler,
-		UserHandler:   userHandler,
-		UserService:   userService,
-		TrxService:    trxHistoryService,
-		DB:            db, // Menyuntikkan koneksi database ke dalam container
+		Config:             cfg,
+		Log:                log,
+		HealthCheckService: healthCheckService,
+		UserService:        userService,
+		DB:                 db, // Menyuntikkan koneksi database ke dalam container
 	}
-
 	// Inisialisasi DI Container
 	return container
 

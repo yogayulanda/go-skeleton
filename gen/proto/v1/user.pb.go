@@ -25,7 +25,7 @@ const (
 // Definisi pesan User
 type User struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`       // ID pengguna
+	Id            string                 `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`       // ID pengguna (gunakan string untuk UUID atau jenis ID lain)
 	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`   // Nama pengguna
 	Email         string                 `protobuf:"bytes,3,opt,name=email,proto3" json:"email,omitempty"` // Email pengguna
 	unknownFields protoimpl.UnknownFields
@@ -451,6 +451,111 @@ func (x *DeleteUserResponse) GetSuccess() bool {
 	return false
 }
 
+// HealthCheck Service untuk memeriksa status aplikasi
+type HealthCheckRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HealthCheckRequest) Reset() {
+	*x = HealthCheckRequest{}
+	mi := &file_proto_v1_user_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthCheckRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthCheckRequest) ProtoMessage() {}
+
+func (x *HealthCheckRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_user_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthCheckRequest.ProtoReflect.Descriptor instead.
+func (*HealthCheckRequest) Descriptor() ([]byte, []int) {
+	return file_proto_v1_user_proto_rawDescGZIP(), []int{9}
+}
+
+type HealthCheckResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DbStatus      string                 `protobuf:"bytes,1,opt,name=dbStatus,proto3" json:"dbStatus,omitempty"`       // Status kesehatan database
+	KafkaStatus   string                 `protobuf:"bytes,2,opt,name=kafkaStatus,proto3" json:"kafkaStatus,omitempty"` // Status kesehatan Kafka
+	Status        string                 `protobuf:"bytes,3,opt,name=status,proto3" json:"status,omitempty"`           // Status keseluruhan aplikasi
+	Message       string                 `protobuf:"bytes,4,opt,name=message,proto3" json:"message,omitempty"`         // Pesan terkait status (misalnya "ok", "failed")
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *HealthCheckResponse) Reset() {
+	*x = HealthCheckResponse{}
+	mi := &file_proto_v1_user_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *HealthCheckResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*HealthCheckResponse) ProtoMessage() {}
+
+func (x *HealthCheckResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_v1_user_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use HealthCheckResponse.ProtoReflect.Descriptor instead.
+func (*HealthCheckResponse) Descriptor() ([]byte, []int) {
+	return file_proto_v1_user_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *HealthCheckResponse) GetDbStatus() string {
+	if x != nil {
+		return x.DbStatus
+	}
+	return ""
+}
+
+func (x *HealthCheckResponse) GetKafkaStatus() string {
+	if x != nil {
+		return x.KafkaStatus
+	}
+	return ""
+}
+
+func (x *HealthCheckResponse) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *HealthCheckResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_proto_v1_user_proto protoreflect.FileDescriptor
 
 const file_proto_v1_user_proto_rawDesc = "" +
@@ -476,7 +581,13 @@ const file_proto_v1_user_proto_rawDesc = "" +
 	"\x11DeleteUserRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\".\n" +
 	"\x12DeleteUserResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess2\x81\x03\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"\x14\n" +
+	"\x12HealthCheckRequest\"\x85\x01\n" +
+	"\x13HealthCheckResponse\x12\x1a\n" +
+	"\bdbStatus\x18\x01 \x01(\tR\bdbStatus\x12 \n" +
+	"\vkafkaStatus\x18\x02 \x01(\tR\vkafkaStatus\x12\x16\n" +
+	"\x06status\x18\x03 \x01(\tR\x06status\x12\x18\n" +
+	"\amessage\x18\x04 \x01(\tR\amessage2\x81\x03\n" +
 	"\vUserService\x12T\n" +
 	"\aGetUser\x12\x17.user.v1.GetUserRequest\x1a\x18.user.v1.GetUserResponse\"\x16\x82\xd3\xe4\x93\x02\x10\x12\x0e/v1/users/{id}\x12[\n" +
 	"\n" +
@@ -484,7 +595,9 @@ const file_proto_v1_user_proto_rawDesc = "" +
 	"\n" +
 	"UpdateUser\x12\x1a.user.v1.UpdateUserRequest\x1a\x1b.user.v1.UpdateUserResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\x1a\x0e/v1/users/{id}\x12]\n" +
 	"\n" +
-	"DeleteUser\x12\x1a.user.v1.DeleteUserRequest\x1a\x1b.user.v1.DeleteUserResponse\"\x16\x82\xd3\xe4\x93\x02\x10*\x0e/v1/users/{id}B1Z/github.com/yogayulanda/go-skeleton/gen/proto/v1b\x06proto3"
+	"DeleteUser\x12\x1a.user.v1.DeleteUserRequest\x1a\x1b.user.v1.DeleteUserResponse\"\x16\x82\xd3\xe4\x93\x02\x10*\x0e/v1/users/{id}2w\n" +
+	"\x12HealthCheckService\x12a\n" +
+	"\vCheckHealth\x12\x1b.user.v1.HealthCheckRequest\x1a\x1c.user.v1.HealthCheckResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/v1/healthcheckB1Z/github.com/yogayulanda/go-skeleton/gen/proto/v1b\x06proto3"
 
 var (
 	file_proto_v1_user_proto_rawDescOnce sync.Once
@@ -498,37 +611,41 @@ func file_proto_v1_user_proto_rawDescGZIP() []byte {
 	return file_proto_v1_user_proto_rawDescData
 }
 
-var file_proto_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_proto_v1_user_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_proto_v1_user_proto_goTypes = []any{
-	(*User)(nil),               // 0: user.v1.User
-	(*GetUserRequest)(nil),     // 1: user.v1.GetUserRequest
-	(*GetUserResponse)(nil),    // 2: user.v1.GetUserResponse
-	(*CreateUserRequest)(nil),  // 3: user.v1.CreateUserRequest
-	(*CreateUserResponse)(nil), // 4: user.v1.CreateUserResponse
-	(*UpdateUserRequest)(nil),  // 5: user.v1.UpdateUserRequest
-	(*UpdateUserResponse)(nil), // 6: user.v1.UpdateUserResponse
-	(*DeleteUserRequest)(nil),  // 7: user.v1.DeleteUserRequest
-	(*DeleteUserResponse)(nil), // 8: user.v1.DeleteUserResponse
+	(*User)(nil),                // 0: user.v1.User
+	(*GetUserRequest)(nil),      // 1: user.v1.GetUserRequest
+	(*GetUserResponse)(nil),     // 2: user.v1.GetUserResponse
+	(*CreateUserRequest)(nil),   // 3: user.v1.CreateUserRequest
+	(*CreateUserResponse)(nil),  // 4: user.v1.CreateUserResponse
+	(*UpdateUserRequest)(nil),   // 5: user.v1.UpdateUserRequest
+	(*UpdateUserResponse)(nil),  // 6: user.v1.UpdateUserResponse
+	(*DeleteUserRequest)(nil),   // 7: user.v1.DeleteUserRequest
+	(*DeleteUserResponse)(nil),  // 8: user.v1.DeleteUserResponse
+	(*HealthCheckRequest)(nil),  // 9: user.v1.HealthCheckRequest
+	(*HealthCheckResponse)(nil), // 10: user.v1.HealthCheckResponse
 }
 var file_proto_v1_user_proto_depIdxs = []int32{
-	0, // 0: user.v1.GetUserResponse.user:type_name -> user.v1.User
-	0, // 1: user.v1.CreateUserRequest.user:type_name -> user.v1.User
-	0, // 2: user.v1.CreateUserResponse.user:type_name -> user.v1.User
-	0, // 3: user.v1.UpdateUserRequest.user:type_name -> user.v1.User
-	0, // 4: user.v1.UpdateUserResponse.user:type_name -> user.v1.User
-	1, // 5: user.v1.UserService.GetUser:input_type -> user.v1.GetUserRequest
-	3, // 6: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
-	5, // 7: user.v1.UserService.UpdateUser:input_type -> user.v1.UpdateUserRequest
-	7, // 8: user.v1.UserService.DeleteUser:input_type -> user.v1.DeleteUserRequest
-	2, // 9: user.v1.UserService.GetUser:output_type -> user.v1.GetUserResponse
-	4, // 10: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
-	6, // 11: user.v1.UserService.UpdateUser:output_type -> user.v1.UpdateUserResponse
-	8, // 12: user.v1.UserService.DeleteUser:output_type -> user.v1.DeleteUserResponse
-	9, // [9:13] is the sub-list for method output_type
-	5, // [5:9] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	0,  // 0: user.v1.GetUserResponse.user:type_name -> user.v1.User
+	0,  // 1: user.v1.CreateUserRequest.user:type_name -> user.v1.User
+	0,  // 2: user.v1.CreateUserResponse.user:type_name -> user.v1.User
+	0,  // 3: user.v1.UpdateUserRequest.user:type_name -> user.v1.User
+	0,  // 4: user.v1.UpdateUserResponse.user:type_name -> user.v1.User
+	1,  // 5: user.v1.UserService.GetUser:input_type -> user.v1.GetUserRequest
+	3,  // 6: user.v1.UserService.CreateUser:input_type -> user.v1.CreateUserRequest
+	5,  // 7: user.v1.UserService.UpdateUser:input_type -> user.v1.UpdateUserRequest
+	7,  // 8: user.v1.UserService.DeleteUser:input_type -> user.v1.DeleteUserRequest
+	9,  // 9: user.v1.HealthCheckService.CheckHealth:input_type -> user.v1.HealthCheckRequest
+	2,  // 10: user.v1.UserService.GetUser:output_type -> user.v1.GetUserResponse
+	4,  // 11: user.v1.UserService.CreateUser:output_type -> user.v1.CreateUserResponse
+	6,  // 12: user.v1.UserService.UpdateUser:output_type -> user.v1.UpdateUserResponse
+	8,  // 13: user.v1.UserService.DeleteUser:output_type -> user.v1.DeleteUserResponse
+	10, // 14: user.v1.HealthCheckService.CheckHealth:output_type -> user.v1.HealthCheckResponse
+	10, // [10:15] is the sub-list for method output_type
+	5,  // [5:10] is the sub-list for method input_type
+	5,  // [5:5] is the sub-list for extension type_name
+	5,  // [5:5] is the sub-list for extension extendee
+	0,  // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_proto_v1_user_proto_init() }
@@ -542,9 +659,9 @@ func file_proto_v1_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_v1_user_proto_rawDesc), len(file_proto_v1_user_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   9,
+			NumMessages:   11,
 			NumExtensions: 0,
-			NumServices:   1,
+			NumServices:   2,
 		},
 		GoTypes:           file_proto_v1_user_proto_goTypes,
 		DependencyIndexes: file_proto_v1_user_proto_depIdxs,

@@ -3,13 +3,18 @@
 package main
 
 import (
+	"log"
+
 	cmd "github.com/yogayulanda/go-skeleton/cmd"
+	logging "github.com/yogayulanda/go-skeleton/pkg/logger"
 )
 
 func main() {
-	// Execute the root command
-	// This will start the server and handle any subcommands
-	// such as "config" or "server"
-	cmd.Execute()
+
+	defer logging.SyncLogger()
+	// Inisialisasi dan eksekusi root command
+	if err := cmd.Execute(); err != nil {
+		log.Fatal("Error executing command:", err)
+	}
 
 }

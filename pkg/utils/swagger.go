@@ -1,7 +1,7 @@
 package utils
 
 import (
-	"github.com/yogayulanda/go-skeleton/pkg/logging"
+	logging "github.com/yogayulanda/go-skeleton/pkg/logger"
 	"go.uber.org/zap"
 	"google.golang.org/genproto/googleapis/api/annotations"
 	"google.golang.org/protobuf/proto"

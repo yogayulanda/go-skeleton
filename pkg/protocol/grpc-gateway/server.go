@@ -1,100 +1,79 @@
 package grpcgateway
 
-import (
-	"context"
-	"crypto/tls"
-	"fmt"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
+// func RunServerGrpcGW(ctx context.Context, container *di.Container) error {
+// 	mux := runtime.NewServeMux()
 
-	v1pb "github.com/yogayulanda/go-skeleton/gen/proto/v1"
-	"github.com/yogayulanda/go-skeleton/pkg/di"
-	"github.com/yogayulanda/go-skeleton/pkg/middleware"
-	"github.com/yogayulanda/go-skeleton/pkg/utils"
-	"go.uber.org/zap"
+// 	// Middleware wrapper
+// 	handler := middleware.ChainMiddleware(
+// 		middleware.HTTPRequestLogger(container.Log),
+// 		middleware.HTTPPanicRecovery(container.Log),
+// 		// Add other middleware here
+// 	)(mux)
 
-	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
-)
+// 	grpcAddr := fmt.Sprintf("localhost:%s", container.Config.GRPC_PORT)
 
-func RunServerGrpcGW(ctx context.Context, container *di.Container) error {
-	mux := runtime.NewServeMux()
+// 	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
 
-	// Middleware wrapper
-	handler := middleware.ChainMiddleware(
-		middleware.HTTPRequestLogger(container.Log),
-		middleware.HTTPPanicRecovery(container.Log),
-		// Add other middleware here
-	)(mux)
+// 	if err := v1pb.RegisterTransactionHistoryServiceHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {
+// 		return fmt.Errorf("failed to register TrxHistory handler: %w", err)
+// 	}
+// 	if err := v1pb.RegisterHealthServiceHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {
+// 		return fmt.Errorf("failed to register Health handler: %w", err)
+// 	}
 
-	grpcAddr := fmt.Sprintf("localhost:%s", container.Config.GRPC_PORT)
+// 	// @auto:inject:handler
 
-	dialOpts := []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())}
+// 	srv := &http.Server{
+// 		Addr:         fmt.Sprintf(":%s", container.Config.HTTP_PORT),
+// 		Handler:      handler,
+// 		ReadTimeout:  15 * time.Second,
+// 		WriteTimeout: 15 * time.Second,
+// 		IdleTimeout:  60 * time.Second,
+// 	}
 
-	if err := v1pb.RegisterTransactionHistoryServiceHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {
-		return fmt.Errorf("failed to register TrxHistory handler: %w", err)
-	}
-	if err := v1pb.RegisterHealthServiceHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {
-		return fmt.Errorf("failed to register Health handler: %w", err)
-	}
+// 	// Optional TLS setup if enabled
+// 	if container.Config.ENABLE_TLS {
+// 		srv.TLSConfig = &tls.Config{
+// 			MinVersion: tls.VersionTLS12,
+// 		}
+// 	}
+// 	utils.LogAvailableEndpoints()
+// 	// Log service started AFTER all init
+// 	container.Log.Info("✅ go-skeleton service started successfully",
+// 		zap.String("version", "v1.0.0"),
+// 		zap.String("time", time.Now().Format(time.RFC3339)),
+// 	)
 
-	// @auto:inject:handler
+// 	// Graceful shutdown
+// 	idleConnsClosed := make(chan struct{})
+// 	go func() {
+// 		stop := make(chan os.Signal, 1)
+// 		signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+// 		<-stop
 
-	srv := &http.Server{
-		Addr:         fmt.Sprintf(":%s", container.Config.HTTP_PORT),
-		Handler:      handler,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
-		IdleTimeout:  60 * time.Second,
-	}
+// 		container.Log.Info("🛑 Shutting down HTTP server...")
 
-	// Optional TLS setup if enabled
-	if container.Config.ENABLE_TLS {
-		srv.TLSConfig = &tls.Config{
-			MinVersion: tls.VersionTLS12,
-		}
-	}
-	utils.LogAvailableEndpoints()
-	// Log service started AFTER all init
-	container.Log.Info("✅ go-skeleton service started successfully",
-		zap.String("version", "v1.0.0"),
-		zap.String("time", time.Now().Format(time.RFC3339)),
-	)
+// 		ctxTimeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+// 		defer cancel()
 
-	// Graceful shutdown
-	idleConnsClosed := make(chan struct{})
-	go func() {
-		stop := make(chan os.Signal, 1)
-		signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-		<-stop
+// 		if err := srv.Shutdown(ctxTimeout); err != nil {
+// 			container.Log.Error("❌ Failed to shutdown HTTP server gracefully", zap.Error(err))
+// 		}
+// 		close(idleConnsClosed)
+// 	}()
 
-		container.Log.Info("🛑 Shutting down HTTP server...")
+// 	// Run server
+// 	var err error
+// 	if container.Config.ENABLE_TLS {
+// 		err = srv.ListenAndServeTLS(container.Config.TLS_CERT_PATH, container.Config.TLS_KEY_PATH)
+// 	} else {
+// 		err = srv.ListenAndServe()
+// 	}
 
-		ctxTimeout, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-		defer cancel()
+// 	if err != http.ErrServerClosed {
+// 		return fmt.Errorf("HTTP server failed: %w", err)
+// 	}
 
-		if err := srv.Shutdown(ctxTimeout); err != nil {
-			container.Log.Error("❌ Failed to shutdown HTTP server gracefully", zap.Error(err))
-		}
-		close(idleConnsClosed)
-	}()
-
-	// Run server
-	var err error
-	if container.Config.ENABLE_TLS {
-		err = srv.ListenAndServeTLS(container.Config.TLS_CERT_PATH, container.Config.TLS_KEY_PATH)
-	} else {
-		err = srv.ListenAndServe()
-	}
-
-	if err != http.ErrServerClosed {
-		return fmt.Errorf("HTTP server failed: %w", err)
-	}
-
-	<-idleConnsClosed
-	return nil
-}
+// 	<-idleConnsClosed
+// 	return nil
+// }

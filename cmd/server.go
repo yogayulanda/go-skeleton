@@ -2,65 +2,88 @@ package server
 
 import (
 	"context"
-	"os"
-	"os/signal"
-	"syscall"
+	"net/http"
 	"time"
 
 	"github.com/yogayulanda/go-skeleton/pkg/config"
 	"github.com/yogayulanda/go-skeleton/pkg/di"
-	grpc "github.com/yogayulanda/go-skeleton/pkg/protocol/grpc"
-	grpcgateway "github.com/yogayulanda/go-skeleton/pkg/protocol/grpc-gateway"
+	protokol "github.com/yogayulanda/go-skeleton/pkg/protocol"
+	"github.com/yogayulanda/go-skeleton/pkg/utils"
 	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 // RunServer starts both the gRPC and HTTP servers, utilizing DI container for dependencies.
-func RunServer(appContext *di.Container, cfg *config.App) {
-	// Start gRPC server in a separate goroutine
-	go startGRPCServer(appContext, cfg)
-
-	// Start gRPC-Gateway REST proxy in a separate goroutine
-	go startGRPCGateway(appContext, cfg)
-
-	// Wait for shutdown signal
-	waitForShutdown(appContext.Log)
-}
-
-// startGRPCServer initializes and runs the gRPC server
-func startGRPCServer(container *di.Container, cfg *config.App) {
-	grpcServer := grpc.NewGRPCServer(container)
-	container.Log.Info("🚀 Starting gRPC server...", zap.String("port", cfg.GRPC_PORT))
-
-	if err := grpc.StartGRPCServer(cfg.GRPC_PORT, grpcServer); err != nil {
-		container.Log.Fatal("❌ Failed to start gRPC server", zap.Error(err))
+func RunServer(container *di.Container, cfg *config.App) error {
+	ctx := context.Background()
+	// Mulai gRPC Server, dengan port yang diambil dari config
+	grpcServer, list, err := protokol.StartGrpcServer(container, cfg)
+	if err != nil {
+		container.Log.Error("❌ Failed to start gRPC-server", zap.Error(err))
+		return err // Mengembalikan error jika gRPC server gagal dimulai
 	}
-}
 
-// startGRPCGateway initializes and runs the gRPC-Gateway (REST proxy)
-func startGRPCGateway(container *di.Container, cfg *config.App) {
-	container.Log.Info("🌐 Starting gRPC-Gateway (REST proxy)...", zap.String("port", cfg.HTTP_PORT))
-
-	if err := grpcgateway.RunServerGrpcGW(context.Background(), container); err != nil {
-		container.Log.Fatal("❌ Failed to start gRPC-Gateway", zap.Error(err))
+	// Mulai HTTP server (gRPC Gateway), dengan port yang diambil dari config
+	httpServer, err := protokol.StartGRPCGateway(ctx, container, cfg)
+	if err != nil {
+		container.Log.Error("❌ Failed to start gRPC-Gateway", zap.Error(err))
+		return err // Mengembalikan error jika HTTP server gagal dimulai
 	}
+
+	// Handle graceful shutdown
+	// stop := make(chan os.Signal, 1)
+	// signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+
+	// Mulai gRPC server di goroutine
+
+	go func() {
+		container.Log.Info("🌐 Starting gRPC-server", zap.String("port", cfg.GRPC_PORT))
+		if err := grpcServer.Serve(list); err != nil {
+			container.Log.Fatal("Failed to serve", zap.Any("error", err))
+		}
+	}()
+
+	container.Log.Info("🌐 Starting HTTP server for gRPC Gateway", zap.String("port", cfg.HTTP_PORT))
+	if err := httpServer.ListenAndServe(); err != nil {
+		// handleHTTPServerShutdownError(err, container)
+	}
+
+	// Log service started AFTER all init
+	utils.LogAvailableEndpoints()
+	container.Log.Info("✅ go-skeleton service started successfully",
+		zap.String("version", "v1.0.0"),
+		zap.String("time", time.Now().Format(time.RFC3339)),
+	)
+	// Menunggu signal untuk shutdown
+	// <-stop
+	// container.Log.Info("🛑 Received shutdown signal")
+	// Menjalankan graceful shutdown untuk gRPC server
+	// gracefulShutdown(grpcServer, httpServer, container)
+	return nil
 }
 
-// waitForShutdown handles graceful shutdown of the application
-func waitForShutdown(log *zap.Logger) {
-	stop := make(chan os.Signal, 1)
-	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
-	sig := <-stop
+// gracefulShutdown menangani shutdown gRPC dan HTTP Gateway secara bersamaan
+func gracefulShutdown(grpcServer *grpc.Server, httpServer *http.Server, container *di.Container) {
+	// Menjalankan graceful shutdown untuk gRPC server
+	grpcServer.GracefulStop()
+	container.Log.Info("🌐 gRPC server stopped gracefully")
 
-	log.Info("🛑 Shutdown signal received", zap.String("signal", sig.String()))
-
-	// Perform cleanup or graceful shutdown steps
-	// Example: Gracefully shutdown gRPC server or close database connections
-	// container.DB.Close() // Uncomment if needed
-
-	// Optionally, wait for ongoing requests to finish before shutting down
-	// Timeout to wait for graceful shutdown
-	_, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	// Menjalankan graceful shutdown untuk HTTP Gateway
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	if err := httpServer.Shutdown(ctx); err != nil {
+		handleHTTPServerShutdownError(err, container)
+	}
+	container.Log.Info("✅ Server shutdown completed")
+}
 
-	log.Info("✅ Server shutdown completed")
+// handleHTTPServerShutdownError menangani error shutdown server HTTP dengan lebih terorganisir
+func handleHTTPServerShutdownError(err error, container *di.Container) {
+	if err == http.ErrServerClosed {
+		// Server sudah ditutup secara graceful
+		container.Log.Info("🌐 HTTP Gateway closed gracefully")
+	} else {
+		// Server gagal dijalankan
+		container.Log.Fatal("Failed to serve HTTP gateway", zap.Error(err))
+	}
 }
