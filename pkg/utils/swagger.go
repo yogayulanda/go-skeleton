@@ -44,7 +44,7 @@ func logHttpRule(logger *zap.Logger, serviceName protoreflect.FullName, methodNa
 		method, path = "PATCH", rule.GetPatch()
 	}
 
-	logging.Log.Info("REST Endpoint registered",
+	logger.Info("REST Endpoint registered",
 		zap.String("method", method),
 		zap.String("path", path),
 		zap.String("service", string(serviceName)),

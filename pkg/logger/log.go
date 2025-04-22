@@ -15,10 +15,6 @@ func initDevelopmentLogger(zapLevel zapcore.Level) (*zap.Logger, error) {
 	cfg.Level.SetLevel(zapLevel)
 	cfg.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
 	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	cfg.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
-
-	// Gunakan zapcore.StackEncoder untuk stack trace
-	// cfg.EncoderConfig.EncodeStack = zapcore.StackEncoder // Ini akan mencatat stack trace dalam format yang mudah dibaca
 
 	cfg.OutputPaths = []string{"stdout"}
 	cfg.ErrorOutputPaths = []string{"stderr"}
@@ -28,11 +24,26 @@ func initDevelopmentLogger(zapLevel zapcore.Level) (*zap.Logger, error) {
 
 // initProductionLogger menginisialisasi logger untuk production environment.
 func initProductionLogger(zapLevel zapcore.Level) (*zap.Logger, error) {
-	cfg := zap.NewProductionConfig()
-	cfg.Level.SetLevel(zapLevel)
-	cfg.EncoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
-	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-
+	cfg := zap.Config{
+		Level:            zap.NewAtomicLevelAt(zap.InfoLevel),
+		Development:      false,
+		Encoding:         "json",
+		OutputPaths:      []string{"stderr"},
+		ErrorOutputPaths: []string{"stderr"},
+		EncoderConfig: zapcore.EncoderConfig{
+			TimeKey:        "ts",
+			LevelKey:       "level",
+			NameKey:        "eng",
+			CallerKey:      "caller",
+			MessageKey:     "msg",
+			StacktraceKey:  "trace",
+			LineEnding:     zapcore.DefaultLineEnding,
+			EncodeLevel:    zapcore.LowercaseLevelEncoder,
+			EncodeTime:     zapcore.ISO8601TimeEncoder,
+			EncodeDuration: zapcore.SecondsDurationEncoder,
+			EncodeCaller:   zapcore.ShortCallerEncoder,
+		},
+	}
 	// Gunakan zapcore.StackEncoder untuk stack trace
 	// cfg.EncoderConfig.EncodeStack = zapcore.StackEncoder // Ini akan mencatat stack trace dalam format yang mudah dibaca
 

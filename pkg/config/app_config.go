@@ -42,6 +42,9 @@ type App struct {
 	X_API_KEY      string `env:"X_API_KEY" yaml:"x_api_key"`
 	HOST_SWITCHING string `env:"HOST_SWITCHING" yaml:"host_switching"`
 	APP_MODE       string `env:"APP_MODE" yaml:"app_mode"`
+	APP_NAME       string `env:"APP_NAME" yaml:"app_name"`
+	APP_VERSION    string `env:"APP_VERSION" yaml:"app_version"`
+	JWT_SECRET_KEY string `env:"JWT_SECRET_KEY" yaml:"jwt_secret_key"`
 
 	// Elastic APM Configuration
 	ELASTIC_APM_CAPTURE_BODY       string `env:"ELASTIC_APM_CAPTURE_BODY" yaml:"elastic_apm_capture_body"`

@@ -4,6 +4,7 @@ import (
 	"context"
 	"strconv"
 
+	"github.com/yogayulanda/go-skeleton/pkg/common"
 	"github.com/yogayulanda/go-skeleton/pkg/domain/user"
 	"github.com/yogayulanda/go-skeleton/pkg/dto"
 	"go.uber.org/zap"
@@ -23,8 +24,12 @@ func NewUserService(repo user.UserRepository, log *zap.Logger) *UserService {
 
 // GetUser mengambil data user berdasarkan ID
 func (s *UserService) GetUser(ctx context.Context, id string) (*dto.UserDTO, error) {
-	s.log.Info("Fetching user by ID", zap.String("id", id))
+	// Mengambil user_id dan role dari context menggunakan custom key dari common
+	userIDFromCtx, _ := ctx.Value(common.CtxUserID).(string)
+	roleFromCtx, _ := ctx.Value(common.CtxRole).(string)
 
+	// Log atau gunakan user_id dan role
+	s.log.Info("getting user profile", zap.String("user_id", userIDFromCtx), zap.String("role", roleFromCtx))
 	// Konversi string ID ke uint
 	userID, err := strconv.ParseUint(id, 10, 32)
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/yogayulanda/go-skeleton/pkg/config"
 	"github.com/yogayulanda/go-skeleton/pkg/di"
+	"github.com/yogayulanda/go-skeleton/pkg/utils"
 )
 
 // Root command
@@ -53,6 +54,13 @@ func Execute() error {
 	if err := config.Init(); err != nil {
 		panic(fmt.Errorf("failed to initialize configuration: %v", err))
 	}
+
+	// Remove soon
+	token, err := utils.GenerateToken("user123", "admin")
+	if err != nil {
+		log.Fatalf("Error generating token: %v", err)
+	}
+	fmt.Println("Generated Token:", token)
 
 	// Menambahkan command
 	rootCMD.AddCommand(configCMD) // Menambahkan perintah config

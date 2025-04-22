@@ -2,13 +2,14 @@ package middleware
 
 import (
 	"context"
+	"time"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
-// TimeoutInterceptor menangani request yang melebihi waktu yang diizinkan (timeout)
+// TimeoutInterceptor sets timeout per RPC method
 func TimeoutInterceptor() grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
@@ -16,14 +17,35 @@ func TimeoutInterceptor() grpc.UnaryServerInterceptor {
 		info *grpc.UnaryServerInfo,
 		handler grpc.UnaryHandler,
 	) (interface{}, error) {
-		// Mengecek apakah deadline sudah tercapai
+		var timeout time.Duration
+
+		// Sesuaikan timeout per method
+		switch info.FullMethod {
+		case "/proto.v1.FinanceService/CheckBill": //set timeout untuk endpoint ke partner
+			timeout = 10 * time.Second
+		case "/proto.v1.SyncCatalogService/Sync":
+			timeout = 15 * time.Second
+		default:
+			timeout = 5 * time.Second // default global timeout
+		}
+
+		ctx, cancel := context.WithTimeout(ctx, timeout)
+		defer cancel()
+
+		ch := make(chan struct{})
+		var resp interface{}
+		var err error
+
+		go func() {
+			resp, err = handler(ctx, req)
+			close(ch)
+		}()
+
 		select {
 		case <-ctx.Done():
-			// Jika deadline tercapai, kembalikan error
-			return nil, status.Errorf(codes.DeadlineExceeded, "request timeout")
-		default:
-			// Lanjutkan dengan handler
-			return handler(ctx, req)
+			return nil, status.Error(codes.DeadlineExceeded, "request timeout")
+		case <-ch:
+			return resp, err
 		}
 	}
 }

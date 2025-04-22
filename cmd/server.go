@@ -3,6 +3,9 @@ package server
 import (
 	"context"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 	"time"
 
 	"github.com/yogayulanda/go-skeleton/pkg/config"
@@ -15,7 +18,6 @@ import (
 
 // RunServer starts both the gRPC and HTTP servers, utilizing DI container for dependencies.
 func RunServer(container *di.Container, cfg *config.App) error {
-	ctx := context.Background()
 	// Mulai gRPC Server, dengan port yang diambil dari config
 	grpcServer, list, err := protokol.StartGrpcServer(container, cfg)
 	if err != nil {
@@ -24,15 +26,15 @@ func RunServer(container *di.Container, cfg *config.App) error {
 	}
 
 	// Mulai HTTP server (gRPC Gateway), dengan port yang diambil dari config
-	httpServer, err := protokol.StartGRPCGateway(ctx, container, cfg)
+	httpServer, err := protokol.StartGRPCGateway(context.Background(), container, cfg)
 	if err != nil {
 		container.Log.Error("❌ Failed to start gRPC-Gateway", zap.Error(err))
 		return err // Mengembalikan error jika HTTP server gagal dimulai
 	}
 
 	// Handle graceful shutdown
-	// stop := make(chan os.Signal, 1)
-	// signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, syscall.SIGINT, syscall.SIGTERM)
 
 	// Mulai gRPC server di goroutine
 
@@ -43,10 +45,12 @@ func RunServer(container *di.Container, cfg *config.App) error {
 		}
 	}()
 
-	container.Log.Info("🌐 Starting HTTP server for gRPC Gateway", zap.String("port", cfg.HTTP_PORT))
-	if err := httpServer.ListenAndServe(); err != nil {
-		// handleHTTPServerShutdownError(err, container)
-	}
+	go func() {
+		container.Log.Info("🌐 Starting HTTP server for gRPC Gateway", zap.String("port", cfg.HTTP_PORT))
+		if err := httpServer.ListenAndServe(); err != nil {
+			// handleHTTPServerShutdownError(err, container)
+		}
+	}()
 
 	// Log service started AFTER all init
 	utils.LogAvailableEndpoints()
@@ -55,10 +59,10 @@ func RunServer(container *di.Container, cfg *config.App) error {
 		zap.String("time", time.Now().Format(time.RFC3339)),
 	)
 	// Menunggu signal untuk shutdown
-	// <-stop
-	// container.Log.Info("🛑 Received shutdown signal")
+	<-stop
+	container.Log.Info("🛑 Received shutdown signal")
 	// Menjalankan graceful shutdown untuk gRPC server
-	// gracefulShutdown(grpcServer, httpServer, container)
+	gracefulShutdown(grpcServer, httpServer, container)
 	return nil
 }
 

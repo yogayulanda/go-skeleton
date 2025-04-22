@@ -6,7 +6,8 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-
+	grpc_ctxtags "github.com/grpc-ecosystem/go-grpc-middleware/tags"
+	"go.elastic.co/apm" // pastikan ini benar, bukan "elastic.co/apm"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -14,7 +15,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-// LogUnaryInterceptor adalah unary interceptor untuk logging setiap request yang masuk
 func LogUnaryInterceptor(logger *zap.Logger) grpc.UnaryServerInterceptor {
 	return func(
 		ctx context.Context,
@@ -24,111 +24,137 @@ func LogUnaryInterceptor(logger *zap.Logger) grpc.UnaryServerInterceptor {
 	) (interface{}, error) {
 
 		start := time.Now()
-		// Cek x-from-http untuk skip logging request pada HTTP
-		if md, ok := metadata.FromIncomingContext(ctx); ok {
-			if val := md.Get("x-from-http"); len(val) > 0 && val[0] == "true" {
-				//get traceID from x-request-id
-				traceID := ""
-				if vals := md.Get("x-request-id"); len(vals) > 0 {
-					traceID = vals[0]
-				} else {
-					traceID = uuid.New().String()
-				}
-				// Log hanya response-nya, tanpa request
-				resp, err := handler(ctx, req)
-				// Log the response details
-				code := status.Code(err)
-				if err != nil {
-					// Check for 'Unimplemented' error or any other error
-					if code == codes.Unimplemented {
-						// Log the 'Unimplemented' error with ERROR level
-						logger.Warn("Method Unimplemented",
-							zap.String("method", info.FullMethod),
-							zap.String("trace_id", traceID),
-							zap.String("status_code", code.String()),
-							zap.String("error_message", err.Error()), // Log message without stack trace
 
-						)
-					} else {
-						// Log other errors with ERROR level
-						logger.Error("RPC Error",
-							zap.String("method", info.FullMethod),
-							zap.String("trace_id", traceID),
-							zap.String("status_code", code.String()),
-							zap.Error(err),
-						)
-					}
-					return resp, err
-				}
-				logger.Info("📡 gRPC Unary Response for HTTP",
+		// Ambil trace_id dari APM jika ada
+		traceID := getTraceIDFromAPM(ctx)
+		requestID := ""
+
+		// Ambil metadata dari request
+		md, _ := metadata.FromIncomingContext(ctx)
+
+		// Ambil request_id dari metadata (atau generate jika kosong)
+		if vals := md.Get("x-request-id"); len(vals) > 0 {
+			requestID = vals[0]
+		} else {
+			requestID = uuid.New().String()
+		}
+
+		// Jika request datang dari HTTP Gateway, skip log request di gRPC
+		if len(md.Get("x-from-http")) > 0 {
+			// Dapatkan trace_id dari HTTP Gateway
+			traceID = md.Get("apm-trace-id")[0]
+			// Skip log request karena sudah ada log di HTTP
+			logger.Debug("Skipping gRPC request log as it's already logged in HTTP Gateway")
+		}
+
+		// Log request hanya jika request belum diproses di HTTP Gateway
+		if len(md.Get("x-from-http")) == 0 {
+			logger.Info("📡 gRPC Unary Request",
+				zap.String("method", info.FullMethod),
+				zap.String("trace_id", traceID),
+				zap.String("request_id", requestID),
+				zap.String("request", fmt.Sprintf("%v", req)),
+			)
+		}
+
+		// Eksekusi gRPC handler
+		resp, err := handler(ctx, req)
+		code := status.Code(err)
+
+		// Log error jika ada
+		if err != nil {
+			if code == codes.Unimplemented {
+				logger.Warn("⚠️ Method Unimplemented",
 					zap.String("method", info.FullMethod),
 					zap.String("trace_id", traceID),
-					zap.Duration("duration", time.Since(start)), // Record duration of request
+					zap.String("request_id", requestID),
+					zap.String("status_code", code.String()),
+					zap.String("error", err.Error()),
+				)
+			} else {
+				logger.Error("❌ RPC Error",
+					zap.String("method", info.FullMethod),
+					zap.String("trace_id", traceID),
+					zap.String("request_id", requestID),
 					zap.String("status_code", code.String()),
 					zap.Error(err),
 				)
-				return resp, err
 			}
 		}
 
-		// Jika tidak ada metadata x-from-http, log request dan response seperti biasa
-		traceID := getOrGenerateTraceID(ctx)
-
-		// Log incoming request
-		logger.Info("📡 gRPC Unary Request",
+		// Log response selalu dicatat
+		logger.Info("✅ gRPC Unary Response",
 			zap.String("method", info.FullMethod),
 			zap.String("trace_id", traceID),
-			zap.String("request", fmt.Sprintf("%v", req)),
-		)
-
-		// Execute the gRPC handler
-		resp, err := handler(ctx, req)
-		code := status.Code(err)
-		logErrorIfNecessary(logger, err, info.FullMethod, traceID, code)
-		// Log the response details
-		logger.Info("📡 gRPC Unary Response",
-			zap.String("method", info.FullMethod),
-			zap.String("trace_id", traceID),
-			zap.Duration("duration", time.Since(start)),
+			zap.String("request_id", requestID),
 			zap.String("status_code", code.String()),
-			zap.Error(err),
+			zap.Duration("duration", time.Since(start)),
 		)
 
 		return resp, err
 	}
 }
 
-func getOrGenerateTraceID(ctx context.Context) string {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if traceIDs, ok := md["x-trace-id"]; ok && len(traceIDs) > 0 {
-		return traceIDs[0] // Use trace ID from incoming metadata if exists
+func StreamLoggingInterceptor(logger *zap.Logger) grpc.StreamServerInterceptor {
+	return func(
+		srv interface{},
+		ss grpc.ServerStream,
+		info *grpc.StreamServerInfo,
+		handler grpc.StreamHandler,
+	) error {
+		start := time.Now()
+		ctx := ss.Context()
+
+		// Ambil trace_id dari APM
+		traceID := getTraceIDFromAPM(ctx)
+
+		// Ambil request_id dari metadata
+		requestID := ""
+		if md, ok := metadata.FromIncomingContext(ctx); ok {
+			if vals := md.Get("x-request-id"); len(vals) > 0 {
+				requestID = vals[0]
+			}
+		}
+
+		logger.Info("📡 gRPC Stream Request",
+			zap.String("method", info.FullMethod),
+			zap.String("trace_id", traceID),
+			zap.String("request_id", requestID),
+			zap.Bool("is_client_stream", info.IsClientStream),
+			zap.Bool("is_server_stream", info.IsServerStream),
+		)
+
+		err := handler(srv, ss)
+		code := status.Code(err)
+		tags := grpc_ctxtags.Extract(ctx).Values()
+
+		fields := []zap.Field{
+			zap.String("method", info.FullMethod),
+			zap.String("trace_id", traceID),
+			zap.String("request_id", requestID),
+			zap.Duration("duration", time.Since(start)),
+			zap.Any("tags", tags),
+			zap.String("grpc_code", code.String()),
+		}
+
+		if err != nil {
+			fields = append(fields, zap.Error(err))
+			logger.Error("❌ gRPC Stream Failed", fields...)
+		} else {
+			logger.Info("✅ gRPC Stream Completed", fields...)
+		}
+
+		return err
 	}
-	// If no trace ID, generate a new one
-	return uuid.New().String()
 }
 
-// logErrorIfNecessary logs the error details only if the error is present
-// and it ensures that error stack trace is not included for 'Unimplemented' errors.
-func logErrorIfNecessary(logger *zap.Logger, err error, method, traceID string, code codes.Code) {
-	if err != nil && code != codes.OK {
-		// Check for 'Unimplemented' error or any other error
-		if code == codes.Unimplemented {
-			// Log the 'Unimplemented' error with ERROR level but no stack trace
-			logger.Error("Method Unimplemented",
-				zap.String("method", method),
-				zap.String("trace_id", traceID),
-				zap.String("status_code", code.String()),
-				// Only log the error message, not the stack trace
-				zap.String("error_message", err.Error()), // Log message without stack trace
-			)
-		} else {
-			// Log other errors with ERROR level, including stack trace if needed
-			logger.Error("RPC Error",
-				zap.String("method", method),
-				zap.String("trace_id", traceID),
-				zap.String("status_code", code.String()),
-				zap.Error(err), // Log with stack trace for critical errors
-			)
-		}
+// getTraceIDFromAPM membantu mendapatkan trace_id dari context APM jika ada
+func getTraceIDFromAPM(ctx context.Context) string {
+	// Ambil span dari context
+	span := apm.SpanFromContext(ctx)
+	if span != nil {
+		// Jika ada span, ambil trace ID-nya
+		return span.TraceContext().Trace.String()
 	}
+	return ""
 }
