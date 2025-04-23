@@ -33,14 +33,25 @@ func HTTPMiddleware(logger *zap.Logger) func(http.Handler) http.Handler {
 			// Ambil token dari header Authorization
 			authHeader := r.Header.Get("Authorization")
 			if authHeader == "" {
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				// Token kosong, kirimkan error dalam format JSON
+				resp := &utils.Response{
+					Status:  "error",
+					Code:    "401",
+					Message: "Token tidak ditemukan",
+				}
+				utils.WriteJSON(w, http.StatusUnauthorized, resp)
 				return
 			}
 
 			// Ekstrak token Bearer
 			token := strings.TrimPrefix(authHeader, "Bearer ")
 			if token == authHeader { // Jika tidak ada prefix "Bearer "
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
+				resp := &utils.Response{
+					Status:  "error",
+					Code:    "401",
+					Message: "Format Token Salah",
+				}
+				utils.WriteJSON(w, http.StatusUnauthorized, resp)
 				return
 			}
 

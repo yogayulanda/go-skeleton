@@ -21,6 +21,8 @@ import (
 
 func StartGRPCGateway(ctx context.Context, container *di.Container, cfg *config.App) (*http.Server, error) {
 	mux := runtime.NewServeMux(
+		runtime.WithErrorHandler(middleware.CustomHTTPErrorHandler), // 🛠️ Custom Error Mapping
+
 		runtime.WithMetadata(func(ctx context.Context, r *http.Request) metadata.MD {
 			md := metadata.New(nil)
 
@@ -57,6 +59,10 @@ func StartGRPCGateway(ctx context.Context, container *di.Container, cfg *config.
 
 	if err := v1pb.RegisterHealthCheckServiceHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {
 		return nil, fmt.Errorf("failed to register HealthCheckService handler: %v", err)
+	}
+
+	if err := v1pb.RegisterUserServiceHandlerFromEndpoint(ctx, mux, grpcAddr, dialOpts); err != nil {
+		return nil, fmt.Errorf("failed to register UserService handler: %v", err)
 	}
 
 	// Gunakan wrappedHandler di sini

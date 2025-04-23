@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package user.v1;
 
+import "google/protobuf/struct.proto";  // Pastikan file struct.proto diimport dengan benar
 import "google/api/annotations.proto";  // Import untuk gRPC-Gateway
 
 option go_package = "github.com/yogayulanda/go-skeleton/gen/proto/v1";  // Path import untuk v1
@@ -11,6 +12,22 @@ message User {
     string id = 1;           // ID pengguna (gunakan string untuk UUID atau jenis ID lain)
     string name = 2;         // Nama pengguna
     string email = 3;        // Email pengguna
+}
+
+// Definisi response sukses secara umum
+message SuccessResponse {
+    string status = 1;   // "success"
+    string code = 2;     // Misalnya "S200"
+    string message = 3;
+    google.protobuf.Struct data = 4; // Data yang dikembalikan (untuk response sukses)
+}
+
+// Definisi response error secara umum
+message ErrorResponse {
+    string status = 1;   // "error"
+    string code = 2;     // Misalnya "E1001"
+    string message = 3;  // Pesan error
+    string detail = 4;   // Detail tentang error (optional)
 }
 
 // Request untuk mendapatkan informasi pengguna

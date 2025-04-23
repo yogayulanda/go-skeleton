@@ -2,12 +2,16 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	v1 "github.com/yogayulanda/go-skeleton/gen/proto/v1"
+	"github.com/yogayulanda/go-skeleton/pkg/common"
 	"github.com/yogayulanda/go-skeleton/pkg/dto" // Menggunakan dto.UserDTO
 	"github.com/yogayulanda/go-skeleton/pkg/service"
 	"go.uber.org/zap"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // UserHandler mengimplementasikan gRPC UserServiceServer
@@ -28,11 +32,20 @@ func NewUserHandler(userService *service.UserService, log *zap.Logger) *UserHand
 func (h *UserHandler) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.GetUserResponse, error) {
 	h.log.Info("Handling GetUser request", zap.String("id", req.GetId()))
 
+	if req.Id == "" {
+		// Gunakan error key dari common
+		return nil, status.Errorf(codes.InvalidArgument, common.ErrUserIDRequired)
+	}
 	// Memanggil UserService untuk mendapatkan user berdasarkan ID
 	userDTO, err := h.userService.GetUser(ctx, req.GetId())
 	if err != nil {
-		h.log.Error("Error fetching user", zap.String("id", req.GetId()), zap.Error(err))
-		return nil, err
+		if errors.Is(err, service.ErrUserNotFound) {
+			// Mengembalikan error not found jika user tidak ditemukan
+			return nil, status.Errorf(codes.NotFound, common.ErrUserNotFound)
+
+		}
+		// Mengembalikan error server internal jika terjadi kesalahan lainnya
+		return nil, status.Errorf(codes.Internal, common.ErrInternal)
 	}
 
 	// Mengonversi ID yang bertipe uint ke string
