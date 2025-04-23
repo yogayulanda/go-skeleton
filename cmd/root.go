@@ -7,7 +7,9 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/yogayulanda/go-skeleton/pkg/config"
 	"github.com/yogayulanda/go-skeleton/pkg/di"
+	logging "github.com/yogayulanda/go-skeleton/pkg/logger"
 	"github.com/yogayulanda/go-skeleton/pkg/utils"
+	"go.uber.org/zap"
 )
 
 // Root command
@@ -26,6 +28,36 @@ var configCMD = &cobra.Command{
 	},
 }
 
+// Rollback command for rolling back migrations
+var rollbackCmd = &cobra.Command{
+	Use:   "rollback",
+	Short: "Rollback the last applied migration",
+	Long:  `This command will rollback the last applied migration using Goose.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		// Initialize the DI container and config
+		// Memuat konfigurasi
+		cfg, err := config.LoadConfig()
+		if err != nil {
+			panic(fmt.Errorf("error loading config: %v", err))
+		}
+
+		logging.InitLogger(cfg.LOG_LEVEL)
+		log := logging.Log
+
+		db, err := config.InitDB(cfg, log)
+		if err != nil {
+			log.Fatal("failed to init DB", zap.Error(err))
+		}
+		// Perform rollback
+		err = config.RollbackSQLMigrations(db) // Call to rollback migrations
+		if err != nil {
+			log.Fatal("Failed to rollback migrations", zap.Error(err))
+		}
+
+		fmt.Println("Migrations rolled back successfully")
+	},
+}
+
 // Server command
 var serverCMD = &cobra.Command{
 	Use:   "server",
@@ -36,7 +68,6 @@ var serverCMD = &cobra.Command{
 		if err != nil {
 			panic(fmt.Errorf("error loading config: %v", err))
 		}
-
 		// Menyiapkan DI container
 		container := di.InitContainer(cfg)
 		container.Log.Info("🚀 Starting the server...")
@@ -65,6 +96,7 @@ func Execute() error {
 	// Menambahkan command
 	rootCMD.AddCommand(configCMD) // Menambahkan perintah config
 	rootCMD.AddCommand(serverCMD) // Menambahkan perintah server
+	rootCMD.AddCommand(rollbackCmd)
 
 	// Eksekusi command yang dipilih
 	if err := rootCMD.Execute(); err != nil {

@@ -6,10 +6,10 @@ import (
 	"net/http"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	"github.com/yogayulanda/go-skeleton/pkg/common"
+	"go.uber.org/zap"
 )
 
 // ErrorResponse untuk format JSON HTTP error response
@@ -27,6 +27,7 @@ func CustomHTTPErrorHandler(
 	w http.ResponseWriter,
 	r *http.Request,
 	err error,
+	log *zap.Logger,
 ) {
 	st, ok := status.FromError(err)
 	if !ok {
@@ -34,60 +35,27 @@ func CustomHTTPErrorHandler(
 		return
 	}
 
-	// Tangani endpoint tidak ditemukan
-	if st.Code() == codes.Unimplemented || st.Code() == codes.NotFound {
-		resp := ErrorResponse{
-			Status:  "error",
-			Code:    "E404",
-			Message: "Endpoint tidak ditemukan",
-		}
-		writeJSON(w, http.StatusNotFound, resp)
-		return
-	}
-
-	// Tangani unauthorized
-	if st.Code() == codes.Unauthenticated {
-		resp := ErrorResponse{
-			Status:  "error",
-			Code:    "E401",
-			Message: "Anda belum login atau token tidak valid",
-		}
-		writeJSON(w, http.StatusUnauthorized, resp)
-		return
-	}
-
-	// Tangani forbidden
-	if st.Code() == codes.PermissionDenied {
-		resp := ErrorResponse{
-			Status:  "error",
-			Code:    "E403",
-			Message: "Anda tidak memiliki akses ke resource ini",
-		}
-		writeJSON(w, http.StatusForbidden, resp)
-		return
-	}
-
-	// Tangani input error
-	if st.Code() == codes.InvalidArgument {
-		resp := ErrorResponse{
-			Status:  "error",
-			Code:    "E400",
-			Message: "Input tidak valid",
-		}
-		writeJSON(w, http.StatusBadRequest, resp)
-		return
-	}
-
-	// Mapping dari ErrorMap (error business logic)
+	// Ambil errorKey dari st.Message()
 	errorKey := st.Message()
-	mapped := common.GetErrorEntry(errorKey)
 
+	// Mapping error code dan message dari ErrorMap atau Redis
+	mapped := common.GetErrorEntry(errorKey) // Hanya 1 kali dipanggil
+
+	// Tentukan HTTP status code berdasarkan gRPC error code
+	statusCode := runtime.HTTPStatusFromCode(st.Code())
+
+	// Kirimkan response error dalam format JSON
+	handleError(w, mapped.Code, mapped.Message, statusCode, log)
+}
+
+func handleError(w http.ResponseWriter, code string, message string, statusCode int, log *zap.Logger) {
+	// Kirimkan response error dalam format JSON
 	resp := ErrorResponse{
 		Status:  "error",
-		Code:    mapped.Code,
-		Message: mapped.Message,
+		Code:    code,
+		Message: message,
 	}
-	writeJSON(w, runtime.HTTPStatusFromCode(st.Code()), resp)
+	writeJSON(w, statusCode, resp)
 }
 
 func writeJSON(w http.ResponseWriter, statusCode int, resp ErrorResponse) {

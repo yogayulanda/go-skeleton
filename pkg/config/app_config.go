@@ -22,21 +22,26 @@ type App struct {
 	HTTP_PORT string `env:"HTTP_PORT" yaml:"http_port" validate:"required"`
 
 	// Database Configuration
-	MSSQL_DB   string `env:"MSSQL_DB" yaml:"mssql_db" validate:"required"`
-	MSSQL_USER string `env:"MSSQL_USER" yaml:"mssql_user" validate:"required"`
-	MSSQL_PASS string `env:"MSSQL_PASS" yaml:"mssql_password" validate:"required"`
-	MSSQL_HOST string `env:"MSSQL_HOST" yaml:"mssql_host" validate:"required"`
-	MSSQL_PORT int    `env:"MSSQL_PORT" yaml:"mssql_port" validate:"required"`
+	MSSQL_DB          string `env:"MSSQL_DB" yaml:"mssql_db" validate:"required"`
+	MSSQL_USER        string `env:"MSSQL_USER" yaml:"mssql_user" validate:"required"`
+	MSSQL_PASS        string `env:"MSSQL_PASS" yaml:"mssql_password" validate:"required"`
+	MSSQL_HOST        string `env:"MSSQL_HOST" yaml:"mssql_host" validate:"required"`
+	MSSQL_PORT        int    `env:"MSSQL_PORT" yaml:"mssql_port" validate:"required"`
+	MIGRATIONS_FOLDER string `env:"MIGRATIONS_FOLDER" yaml:"migrations_folder"`
 
 	// Logging Configuration
 	LOG_LEVEL       string `env:"LOG_LEVEL" yaml:"log_level"`
 	LOG_TIME_FORMAT string `env:"LOG_TIME_FORMAT" yaml:"log_time_format"`
 
 	// Misc Configuration
-	MIGRATIONS_FOLDER    string `env:"MIGRATIONS_FOLDER" yaml:"migrations_folder"`
 	MEMCACHE_HOST        string `env:"MEMCACHE_HOST" yaml:"memcache_host"`
 	MEMCACHE_PORT        string `env:"MEMCACHE_PORT" yaml:"memcache_port"`
 	EMAIL_SERVICE_CONFIG string `env:"NOTIF_SERVICE_CONFIG" yaml:"email_service_config"`
+
+	// Redis Config
+	REDIST_ADDR     string `env:"REDIST_ADDR" yaml:"redist_addr"`
+	REDIST_PASSWORD string `env:"REDIST_PASSWORD" yaml:"redist_password"`
+	REDIST_DB       int    `env:"REDIST_DB" yaml:"redist_db"`
 
 	// API & Keys Configuration
 	X_API_KEY      string `env:"X_API_KEY" yaml:"x_api_key"`

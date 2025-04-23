@@ -21,7 +21,7 @@ import (
 
 func StartGRPCGateway(ctx context.Context, container *di.Container, cfg *config.App) (*http.Server, error) {
 	mux := runtime.NewServeMux(
-		runtime.WithErrorHandler(middleware.CustomHTTPErrorHandler), // 🛠️ Custom Error Mapping
+		// runtime.WithErrorHandler(middleware.CustomHTTPErrorHandler), // 🛠️ Custom Error Mapping
 
 		runtime.WithMetadata(func(ctx context.Context, r *http.Request) metadata.MD {
 			md := metadata.New(nil)
