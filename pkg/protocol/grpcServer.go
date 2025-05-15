@@ -55,7 +55,7 @@ func StartGrpcServer(container *di.Container, cfg *config.App) (*grpc.Server, ne
 
 	grpcServer := grpc.NewServer(opts...)
 	// Setup User handler
-	userHandler := handler.NewUserHandler(container.UserService, container.Log)
+	userHandler := handler.NewUserHandler(container.UserService, container.ErrorRepo, container.Log)
 	v1.RegisterUserServiceServer(grpcServer, userHandler)
 
 	// Setup HealthCheck handler

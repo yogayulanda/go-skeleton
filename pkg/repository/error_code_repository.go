@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/yogayulanda/go-skeleton/pkg/models"
@@ -31,13 +32,16 @@ func (r *ErrorCodeRepository) GetAll(ctx context.Context) ([]models.ErrorCode, e
 }
 
 // GetErrorCode mengambil error code berdasarkan kode dari database
-func (r *ErrorCodeRepository) GetErrorCode(ctx context.Context, code string) (string, error) {
+func (r *ErrorCodeRepository) GetErrorMessageByCode(code string) (*models.ErrorCode, error) {
 	var errorCode models.ErrorCode
-	err := r.DB.WithContext(ctx).Where("code = ?", code).First(&errorCode).Error
-	if err != nil {
-		return "", err
+	if err := r.DB.First(&errorCode, "code = ?", code).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			// Kode error tidak ditemukan, kita bisa mengembalikan error kustom
+			return nil, errors.New("error code not found")
+		}
+		return nil, err
 	}
-	return errorCode.Message, nil
+	return &errorCode, nil
 }
 
 // GetUpdatedErrorCodes mengambil error codes yang diubah setelah timestamp tertentu

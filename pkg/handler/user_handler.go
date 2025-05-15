@@ -8,7 +8,9 @@ import (
 	v1 "github.com/yogayulanda/go-skeleton/gen/proto/v1"
 	"github.com/yogayulanda/go-skeleton/pkg/common"
 	"github.com/yogayulanda/go-skeleton/pkg/dto" // Menggunakan dto.UserDTO
+	"github.com/yogayulanda/go-skeleton/pkg/repository"
 	"github.com/yogayulanda/go-skeleton/pkg/service"
+	"github.com/yogayulanda/go-skeleton/pkg/utils"
 	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -18,12 +20,14 @@ import (
 type UserHandler struct {
 	v1.UnimplementedUserServiceServer                      // Embedkan UnimplementedUserServiceServer untuk kompatibilitas gRPC
 	userService                       *service.UserService // Gunakan pointer ke UserService
+	errorRepo                         *repository.ErrorCodeRepository
 	log                               *zap.Logger
 }
 
-func NewUserHandler(userService *service.UserService, log *zap.Logger) *UserHandler { // Menerima pointer
+func NewUserHandler(userService *service.UserService, errorRepo *repository.ErrorCodeRepository, log *zap.Logger) *UserHandler { // Menerima pointer
 	return &UserHandler{
 		userService: userService,
+		errorRepo:   errorRepo,
 		log:         log,
 	}
 }
@@ -42,10 +46,16 @@ func (h *UserHandler) GetUser(ctx context.Context, req *v1.GetUserRequest) (*v1.
 		if errors.Is(err, service.ErrUserNotFound) {
 			// Mengembalikan error not found jika user tidak ditemukan
 			return nil, status.Errorf(codes.NotFound, common.ErrUserNotFound)
-
 		}
-		// Mengembalikan error server internal jika terjadi kesalahan lainnya
-		return nil, status.Errorf(codes.Internal, common.ErrInternal)
+
+		//  TODO Move to Utils for get DB and Cache, parameter Ctx, Error, and Code
+		errorCode, err := h.errorRepo.GetErrorMessageByCode("E1004") // Contoh menggunakan kode error "E001"
+		// Ambil pesan error dari DB berdasarkan kode error
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "Error fetching error message from DB: %v", err)
+		}
+		// Gunakan SetGrpcError untuk memberikan response error yang kustom
+		return nil, utils.SetGrpcError(codes.Internal, errorCode.Code, errorCode.Message)
 	}
 
 	// Mengonversi ID yang bertipe uint ke string

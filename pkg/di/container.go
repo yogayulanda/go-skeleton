@@ -25,6 +25,7 @@ type Container struct {
 	Redist             *redisClient.Client
 	HealthCheckService *service.HealthCheckService
 	UserService        *service.UserService
+	ErrorRepo          *repository.ErrorCodeRepository
 }
 
 func InitContainer(cfg *config.App) *Container {
@@ -58,6 +59,7 @@ func InitContainer(cfg *config.App) *Container {
 	healthCheckService := service.NewHealthCheckService(db, log)
 
 	userRepo := repository.NewUserRepository(db, log)
+	errorRepo := repository.NewErrorCodeRepository(db)
 	userService := service.NewUserService(userRepo, log)
 
 	container = &Container{
@@ -67,6 +69,7 @@ func InitContainer(cfg *config.App) *Container {
 		UserService:        userService,
 		DB:                 db, // Menyuntikkan koneksi database ke dalam container
 		Redist:             redisClient,
+		ErrorRepo:          errorRepo,
 	}
 	// Inisialisasi DI Container
 	return container

@@ -1,0 +1,12 @@
+version: v1
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/protocolbuffers/wellknowntypes  # ← untuk google/protobuf/struct.proto
+
+lint:
+  use:
+    - DEFAULT
+
+breaking:
+  use:
+    - FILE

@@ -7,9 +7,9 @@ import (
 
 	"github.com/yogayulanda/go-skeleton/pkg/common"
 	"github.com/yogayulanda/go-skeleton/pkg/domain/user"
+
 	"github.com/yogayulanda/go-skeleton/pkg/dto"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
 var (
@@ -46,11 +46,6 @@ func (s *UserService) GetUser(ctx context.Context, id string) (*dto.UserDTO, err
 	// Mendapatkan user dari repository menggunakan ctx
 	user, err := s.repo.GetByID(ctx, uint(userID))
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			s.log.Error("User not found", zap.String("id", id))
-			return nil, ErrUserNotFound
-		}
-		s.log.Error("Error fetching user", zap.String("id", id), zap.Error(err))
 		return nil, err
 	}
 

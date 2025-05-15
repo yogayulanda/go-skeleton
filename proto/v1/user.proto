@@ -4,6 +4,8 @@ package user.v1;
 
 import "google/protobuf/struct.proto";  // Pastikan file struct.proto diimport dengan benar
 import "google/api/annotations.proto";  // Import untuk gRPC-Gateway
+import "error.proto";
+
 
 option go_package = "github.com/yogayulanda/go-skeleton/gen/proto/v1";  // Path import untuk v1
 
